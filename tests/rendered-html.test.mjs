@@ -8,5 +8,7 @@ test("v0.2 about-us ribbon contains bilingual copy and reveal interaction", asyn
   assert.match(source, /關於我們/);
   assert.match(source, /Two people with different rhythms/);
   assert.match(source, /about-photo-reveal/);
+  assert.match(source, /src="about-us\.jpg"/);
+  assert.match(source, /冠禎 &amp; 玟慧/);
   assert.match(source, /orientation-note/);
 });

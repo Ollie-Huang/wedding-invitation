@@ -115,11 +115,11 @@ export default function Home() {
   }, [open]);
 
   return (
-    <main className="invitation-shell" style={{ "--about-photo": 'url("about-us.jpg")' } as React.CSSProperties}>
+    <main className="invitation-shell">
       <div className="paper-grain" aria-hidden="true" />
       <header className="masthead">
-        <div className="monogram" aria-label="新人姓名縮寫">Y <i>&amp;</i> C</div>
-        <p>Yu-Wei &amp; Chia-Ning</p>
+        <div className="monogram" aria-label="新人姓名縮寫">G <i>&amp;</i> W</div>
+        <p>冠禎 &amp; 玟慧</p>
       </header>
 
       <nav className="pull-nav" aria-label="喜帖章節">
@@ -152,7 +152,6 @@ export default function Home() {
                 <span className="handle-progress" />
               </span>
               <span className="handle-arrow" aria-hidden="true">→</span>
-              <span className="handle-hint">輕拉預覽 · 拉滿展開</span>
             </button>
           );
         })}
@@ -169,7 +168,7 @@ export default function Home() {
             <article className={`slide slide-${index + 1}`} key={chapter.number}>
               {index === 0 ? (
                 <>
-                  <div className="about-preview-photo" aria-label="新人照片預留區" />
+                  <img className="about-preview-photo" src="about-us.jpg" alt="冠禎與玟慧的婚紗照" />
                   <div className="about-preview-vignette" aria-hidden="true" />
                   <div className="about-preview-copy">
                     <p className="about-kicker"><span>第一章</span><small>CHAPTER ONE</small></p>
@@ -193,7 +192,11 @@ export default function Home() {
                     <div className="photo-card photo-back"><span>PHOTO</span></div>
                     <div className="photo-card photo-front">
                       <span className="photo-index">{chapter.number}</span>
-                      <div className="photo-placeholder">照片／動畫<br />預留位置</div>
+                      {index === 1 ? (
+                        <img className="chapter-photo" src="about-us.jpg" alt="冠禎與玟慧的婚紗照" />
+                      ) : (
+                        <div className="photo-placeholder">照片／動畫<br />預留位置</div>
+                      )}
                       <small>YOUR MOMENT HERE</small>
                     </div>
                     <div className="botanical botanical-one" aria-hidden="true"><i /><i /><i /></div>
@@ -224,8 +227,8 @@ export default function Home() {
         >
           {open === 0 ? (
             <>
-              <div className="about-photo about-photo-muted" aria-hidden="true" />
-              <div className="about-photo about-photo-reveal" aria-hidden="true" />
+              <img className="about-photo about-photo-muted" src="about-us.jpg" alt="" aria-hidden="true" />
+              <img className="about-photo about-photo-reveal" src="about-us.jpg" alt="" aria-hidden="true" />
               <div className="about-detail-shade" aria-hidden="true" />
               <div className="about-detail-content">
                 <header className="about-detail-heading">
@@ -251,6 +254,7 @@ export default function Home() {
             </>
           ) : (
             <>
+              {open === 1 && <img className="detail-background-photo" src="about-us.jpg" alt="" aria-hidden="true" />}
               <button className="detail-close" onClick={() => setOpen(null)} aria-label="關閉展開內容">×</button>
               <div className="detail-index">{chapters[open].number}</div>
               <div className="detail-visual">
