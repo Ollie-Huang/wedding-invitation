@@ -37,6 +37,9 @@ export default function Home() {
   const [pull, setPull] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
   const [viewingTipOpen, setViewingTipOpen] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fullscreenHelp, setFullscreenHelp] = useState(false);
+  const [portraitScale, setPortraitScale] = useState(0.2);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const dragStart = useRef(0);
 
@@ -44,6 +47,30 @@ export default function Home() {
     setCountdown(remainingTime());
     const timer = window.setInterval(() => setCountdown(remainingTime()), 1000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const syncFullscreen = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, []);
+
+  useEffect(() => {
+    const syncCanvasScale = () => {
+      const isPortraitDevice = window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
+      if (!isPortraitDevice) {
+        setPortraitScale(1);
+        return;
+      }
+      setPortraitScale(Math.min((window.innerWidth - 16) / 1600, (window.innerHeight - 16) / 900));
+    };
+    syncCanvasScale();
+    window.addEventListener("resize", syncCanvasScale);
+    window.addEventListener("orientationchange", syncCanvasScale);
+    return () => {
+      window.removeEventListener("resize", syncCanvasScale);
+      window.removeEventListener("orientationchange", syncCanvasScale);
+    };
   }, []);
 
   useEffect(() => {
@@ -94,9 +121,26 @@ export default function Home() {
     setPull(0);
   };
 
+  const toggleFullscreen = async () => {
+    setFullscreenHelp(false);
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        setFullscreenHelp(true);
+      }
+    } catch {
+      setFullscreenHelp(true);
+    }
+  };
+
   return (
     <main className="invitation-shell">
       <div className="paper-grain" aria-hidden="true" />
+
+      <div className="invitation-canvas" style={{ "--portrait-scale": portraitScale } as React.CSSProperties}>
 
       <header className="masthead" aria-label="新人姓名">
         <span className="name-ornament" aria-hidden="true">✦</span>
@@ -179,6 +223,7 @@ export default function Home() {
           </>
         )}
       </section>
+      </div>
 
       <aside className="viewing-tip" data-dismissed={!viewingTipOpen} aria-hidden={!viewingTipOpen}>
         <div className="viewing-tip-card">
@@ -187,12 +232,17 @@ export default function Home() {
           <h2>建議將手機轉為橫向</h2>
           <p>橫向觀看能完整呈現照片、拉條與展開動畫；你仍然可以選擇直向瀏覽。</p>
           <div className="viewing-tip-actions">
-            <button onClick={() => enterFullscreen(setViewingTipOpen)}>橫向・全螢幕觀看</button>
+            <button onClick={async () => { await toggleFullscreen(); setViewingTipOpen(false); }}>橫向・全螢幕觀看</button>
             <button className="tip-secondary" onClick={() => setViewingTipOpen(false)}>繼續直向瀏覽</button>
           </div>
           <small>iPhone／iPad 若仍顯示網址列，可從分享選單選擇「加入主畫面」，再由主畫面開啟。</small>
         </div>
       </aside>
+
+      <button className="mobile-fullscreen-toggle" onClick={toggleFullscreen} aria-label={isFullscreen ? "離開全螢幕" : "進入全螢幕"}>
+        <span aria-hidden="true">{isFullscreen ? "↙" : "⛶"}</span>{isFullscreen ? "離開全螢幕" : "全螢幕觀看"}
+      </button>
+      {fullscreenHelp && <p className="fullscreen-help" role="status">此瀏覽器不支援網頁全螢幕，請從分享選單選擇「加入主畫面」。</p>}
     </main>
   );
 }
@@ -338,16 +388,4 @@ function RsvpDetail() {
 
 function safeWidth() {
   return typeof window === "undefined" ? 1200 : window.innerWidth;
-}
-
-async function enterFullscreen(setViewingTipOpen: (open: boolean) => void) {
-  try {
-    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-      await document.documentElement.requestFullscreen();
-    }
-  } catch {
-    // Some mobile browsers only support standalone home-screen mode.
-  } finally {
-    setViewingTipOpen(false);
-  }
 }
