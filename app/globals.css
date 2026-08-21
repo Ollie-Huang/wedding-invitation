@@ -65,6 +65,20 @@ button { font: inherit; }
 .preview-photo-card::before { content: ""; position: absolute; inset: -7px 8% auto; height: 13px; background: rgba(211,189,154,.72); transform: rotate(-1.8deg); }
 .preview-photo-card img { width: 100%; height: 100%; display: block; object-fit: cover; }
 
+/* First-cover photo treatment restored from the previous chapter-two layout. */
+.legacy-photo-composition { position: relative; z-index: 2; justify-self: center; width: min(34vw, 470px); height: min(65vh, 600px); }
+.legacy-photo-back, .legacy-photo-front { position: absolute; border: 1px solid rgba(95,112,105,.28); }
+.legacy-photo-back { inset: 7% 5% 3% 14%; background: #d8c9b8; box-shadow: 0 18px 42px rgba(31,53,46,.18); transform: rotate(5deg); }
+.legacy-photo-front { inset: 2% 14% 9% 5%; overflow: hidden; padding: clamp(7px, .8vw, 12px); background: #eee6da; box-shadow: 0 22px 54px rgba(18,40,34,.28); transform: rotate(-2.5deg); }
+.legacy-photo-front img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 52%; filter: saturate(.9) contrast(.98); }
+.legacy-botanical { position: absolute; z-index: 3; width: 78px; height: 130px; border-left: 2px solid #b38d59; opacity: .82; transform: rotate(-30deg); transform-origin: bottom; }
+.legacy-botanical i { position: absolute; width: 39px; height: 17px; border: 1px solid #b38d59; border-radius: 100% 0 100% 0; transform: rotate(-27deg); }
+.legacy-botanical i:nth-child(1) { left: 0; top: 24px; }
+.legacy-botanical i:nth-child(2) { left: -37px; top: 54px; transform: scaleX(-1) rotate(-27deg); }
+.legacy-botanical i:nth-child(3) { left: -1px; top: 84px; }
+.legacy-botanical-one { right: 1%; bottom: 1%; }
+.legacy-botanical-two { left: 0; top: 8%; transform: rotate(145deg) scale(.7); }
+
 /* Chapter 1 preview: photo stays only in the right card */
 .slide-1 { color: var(--cream); background: linear-gradient(120deg, #17332e 0%, #29473f 55%, #3b5a52); }
 .slide-1::before { background: radial-gradient(circle at 78% 20%, rgba(226,201,157,.13), transparent 30%); }
@@ -188,6 +202,20 @@ button { font: inherit; }
 .rsvp-detail-inner button { align-self: flex-start; margin-top: 25px; padding: 14px 20px; border: 0; color: var(--cream); background: #31534b; letter-spacing: .1em; }
 .rsvp-detail-inner button span { margin-left: 22px; }
 
+/* The entry hint is intentionally shown only on portrait phones and tablets. */
+.viewing-tip { display: none; }
+.viewing-tip-card { width: min(84vw, 440px); padding: clamp(28px, 7vw, 48px); color: var(--ink); text-align: center; background: rgba(246,240,230,.97); border: 1px solid rgba(184,146,95,.55); box-shadow: 0 28px 80px rgba(10,30,25,.36); }
+.viewing-tip-card .chapter-kicker { justify-content: center; }
+.viewing-tip-card h2 { margin: 18px 0 12px; color: #294943; font-size: clamp(26px, 7vw, 42px); font-weight: 500; letter-spacing: .08em; }
+.viewing-tip-card > p:not(.chapter-kicker) { margin: 0 auto; max-width: 29em; font-size: 13px; line-height: 1.85; }
+.viewing-tip-card > small { display: block; margin-top: 18px; color: #73807b; font-size: 9px; line-height: 1.65; }
+.rotate-device { position: relative; width: 74px; height: 50px; margin: 0 auto 25px; }
+.rotate-device i { position: absolute; left: 9px; top: 6px; width: 34px; height: 53px; border: 2px solid #668078; border-radius: 7px; transform: rotate(68deg); }
+.rotate-device span { position: absolute; right: 0; top: 0; color: #b48b57; font: 30px Arial, sans-serif; }
+.viewing-tip-actions { display: grid; gap: 9px; margin-top: 25px; }
+.viewing-tip-actions button { padding: 12px 16px; border: 1px solid #31534b; color: var(--cream); background: #31534b; letter-spacing: .09em; cursor: pointer; }
+.viewing-tip-actions .tip-secondary { color: #31534b; background: transparent; }
+
 @media (max-height: 560px) and (orientation: landscape) {
   .stage { top: 45px; bottom: 10px; }
   .masthead, .countdown { top: 9px; }
@@ -203,9 +231,9 @@ button { font: inherit; }
   .story-row small { font-size: 7px; }
 }
 
-/* Portrait is now a first-class layout; ribbons remain narrow and the stage stays clear. */
+/* Portrait keeps the original 16:9 artwork ratio and centers it without squeezing. */
 @media (orientation: portrait) and (max-width: 1024px) {
-  .invitation-shell { min-height: 620px; }
+  .invitation-shell { min-height: 100svh; }
   .masthead { top: 12px; left: 16px; }
   .name-ornament { width: 27px; height: 27px; }
   .name-lockup { padding-right: 10px; }
@@ -216,83 +244,77 @@ button { font: inherit; }
   .countdown b { font-size: 10px; }
   .countdown small { display: none; }
   .countdown i { margin: 0 1px; }
-  .stage { inset: 55px 9px 9px 45px; }
+  .stage { top: 50%; right: 9px; bottom: auto; left: 53px; width: auto; height: auto; aspect-ratio: 16 / 9; transform: translateY(-50%); }
   .stage::before { inset: 7px; }
   .frame-corner-one { top: 6px; left: 6px; }
   .frame-corner-two { right: 6px; bottom: 6px; }
-  .pull-nav { top: 18%; bottom: 7%; width: 47px; }
-  .pull-handle, .pull-handle.is-active { width: 43px; min-height: 51px; padding: 7px 7px 7px 10px; grid-template-columns: 1fr; place-items: center; }
-  .pull-handle.is-active { width: 48px; }
+  .pull-nav { top: 50%; bottom: auto; width: 49px; height: calc((100vw - 62px) * .5625); transform: translateY(-50%); }
+  .pull-handle, .pull-handle.is-active { width: 44px; min-height: 0; height: min(38px, 19%); padding: 5px 7px 5px 10px; grid-template-columns: 1fr; place-items: center; }
+  .pull-handle.is-active { width: 49px; }
   .handle-label, .handle-arrow { display: none; }
-  .handle-number { margin: 0; font-size: 10px; }
-  .slide { grid-template-columns: 1fr; grid-template-rows: 52% 48%; padding: 7% 7% 10%; align-items: center; }
-  .about-preview-copy, .families-copy, .venue-copy, .generic-copy { width: 100%; padding: 16px 14px; align-self: end; }
-  .about-preview-copy h1, .families-copy h1, .venue-copy h1, .generic-copy h1 { margin-top: 10px; font-size: clamp(30px, 9vw, 58px); }
-  .gold-rule { margin: 13px 0; }
-  .bilingual-intro { font-size: clamp(11px, 3vw, 15px); line-height: 1.55; }
-  .preview-photo-card, .map-card.is-compact { align-self: start; width: min(78vw, 520px); height: min(37vh, 390px); }
-  .preview-photo-card img { object-position: center 53%; }
-  .family-mini-cards { margin-top: 14px; gap: 7px; }
-  .family-mini-cards > div { padding: 8px; }
+  .handle-number { margin: 0; font-size: 8px; }
+  .slide { grid-template-columns: 52% 48%; grid-template-rows: 1fr; padding: 5% 5% 8% 9%; align-items: center; }
+  .about-preview-copy, .families-copy, .venue-copy, .generic-copy { width: auto; padding: 3vw 2.2vw; align-self: auto; }
+  .chapter-kicker { gap: 1.2vw; font-size: clamp(6px, 1.5vw, 11px); }
+  .about-preview-copy h1, .families-copy h1, .venue-copy h1, .generic-copy h1 { margin-top: 1.5vw; font-size: clamp(20px, 6vw, 50px); }
+  .gold-rule { margin: 1.8vw 0; }
+  .bilingual-intro { font-size: clamp(7px, 2vw, 15px); line-height: 1.5; }
+  .bilingual-intro small { margin-top: 3px; }
+  .legacy-photo-composition { width: 35vw; height: calc((100vw - 62px) * .43); }
+  .legacy-botanical { transform: rotate(-30deg) scale(.5); }
+  .legacy-botanical-two { transform: rotate(145deg) scale(.38); }
+  .preview-photo-card, .map-card.is-compact { width: 35vw; height: calc((100vw - 62px) * .43); }
+  .family-mini-cards { margin-top: 1.7vw; gap: .7vw; }
+  .family-mini-cards > div { padding: .9vw; }
   .family-mini-cards span { display: none; }
-  .families-copy h1 { font-size: clamp(27px, 7.5vw, 48px); }
-  .venue-copy h1 { margin-bottom: 12px; font-size: clamp(27px, 7.4vw, 48px); }
-  .venue-name { margin-bottom: 7px; font-size: 15px; }
-  .venue-address { font-size: 9px; }
-  .venue-time { margin-top: 8px; font-size: 11px; }
+  .family-mini-cards small { font-size: 5px; }
+  .family-mini-cards b { margin: 3px 0; font-size: clamp(7px, 1.6vw, 13px); }
+  .families-copy h1 { font-size: clamp(18px, 5vw, 42px); }
+  .venue-copy h1 { margin-bottom: 1.8vw; font-size: clamp(18px, 5vw, 42px); }
+  .venue-name { margin-bottom: .8vw; font-size: clamp(8px, 2.2vw, 18px); }
+  .venue-address { font-size: clamp(5px, 1.35vw, 10px); line-height: 1.45; }
+  .venue-time { margin-top: 1vw; font-size: clamp(6px, 1.6vw, 12px); }
   .stage-footer { left: 7%; right: 5%; bottom: 2%; }
-  .stage-footer p { font-size: 7px; }
+  .stage-footer p { font-size: clamp(5px, 1vw, 7px); }
   .stage-footer p span { display: none; }
+  .pagination { gap: 3px; font-size: 6px; }
+  .pagination b { font-size: 8px; }
+  .pagination i { width: 4vw; }
   .detail-close { top: 18px; right: 18px; width: 34px; height: 34px; }
   .about-band { object-position: 60% center; }
   .about-detail-inner::after { background: linear-gradient(90deg, rgba(1,4,3,.9), rgba(2,5,4,.65) 70%, transparent); }
-  .about-row { left: 3%; width: 72%; padding: 0 10px; }
-  .about-heading-row h2 { font-size: clamp(18px, 5.2vw, 31px); }
-  .story-row span { font-size: clamp(9px, 2.5vw, 13px); }
-  .story-row small { font-size: clamp(6px, 1.55vw, 8px); }
-  .families-detail-inner { padding: 15% 6% 8%; }
-  .family-detail-title p { font-size: clamp(24px, 6.5vw, 42px); }
-  .family-detail-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
-  .family-detail-grid > b { display: none; }
-  .family-detail-grid article { padding: 14px; }
-  .family-detail-grid h2 { margin: 7px 0; font-size: 21px; }
-  .family-detail-grid p { font-size: 10px; line-height: 1.55; }
-  .family-detail-grid article span { margin-top: 8px; }
-  .family-note { font-size: 7px; }
-  .venue-detail-inner { grid-template-columns: 1fr; grid-template-rows: 43% 57%; gap: 12px; padding: 7% 7% 6%; }
-  .venue-detail-inner > .map-card { height: 100%; }
-  .venue-detail-copy { padding: 0; }
-  .venue-detail-copy h2 { margin: 8px 0 12px; font-size: clamp(24px, 6vw, 38px); }
-  .venue-detail-copy dl > div { margin-bottom: 6px; padding-bottom: 5px; }
-  .venue-detail-copy dt { margin-bottom: 2px; font-size: 8px; }
-  .venue-detail-copy dd { font-size: 9px; line-height: 1.35; }
-  .map-link { margin-top: 2px; padding: 9px 12px; font-size: 9px; }
-  .rsvp-seal { width: min(52vw, 330px); }
+  .about-row { left: 3%; width: 72%; padding: 0 1vw; }
+  .about-heading-row h2 { font-size: clamp(10px, 3.4vw, 27px); }
+  .about-heading-row > p { margin-bottom: 2px; font-size: clamp(5px, 1.2vw, 9px); }
+  .story-row span { font-size: clamp(5px, 1.45vw, 11px); }
+  .story-row small { margin-top: 1px; font-size: clamp(4px, .9vw, 7px); }
+  .detail-close { top: 9px; right: 9px; width: 24px; height: 24px; font-size: 16px; }
+  .family-detail-title p { font-size: clamp(14px, 4vw, 32px); }
+  .family-detail-title small { font-size: 5px; }
+  .family-detail-grid { gap: 2vw; margin-top: 2vw; }
+  .family-detail-grid article { padding: 1.4vw; }
+  .family-detail-grid article small, .family-detail-grid article span { font-size: 5px; }
+  .family-detail-grid h2 { margin: .7vw 0; font-size: clamp(10px, 2.4vw, 19px); }
+  .family-detail-grid p { font-size: clamp(5px, 1.1vw, 9px); line-height: 1.45; }
+  .family-detail-grid article span { margin-top: .8vw; }
+  .family-note { margin-top: 1vw; font-size: 5px; }
+  .venue-detail-inner { grid-template-columns: 56% 44%; gap: 3%; padding: 5% 6%; }
+  .venue-detail-inner > .map-card { height: 76%; }
+  .venue-detail-copy { padding-right: 4%; }
+  .venue-detail-copy h2 { margin: 1vw 0; font-size: clamp(12px, 3vw, 24px); }
+  .venue-detail-copy dl > div { margin-bottom: .5vw; padding-bottom: .5vw; }
+  .venue-detail-copy dt { margin-bottom: 1px; font-size: 5px; }
+  .venue-detail-copy dd { font-size: clamp(4px, .9vw, 7px); line-height: 1.25; }
+  .map-link { margin-top: 1px; padding: 4px 6px; font-size: 5px; }
+  .rsvp-seal { width: 27vw; }
+  .viewing-tip:not([data-dismissed="true"]) { position: fixed; z-index: 100; inset: 0; display: flex; align-items: center; justify-content: center; padding: 7vw; background: rgba(23,52,46,.96); }
 }
 
 @media (max-width: 430px) and (orientation: portrait) {
   .countdown p { display: none; }
-  .stage { top: 49px; }
-  .slide { grid-template-rows: 55% 45%; }
-  .about-preview-copy, .families-copy, .venue-copy, .generic-copy { padding: 12px 10px; }
-  .chapter-kicker { gap: 8px; font-size: 8px; }
-  .about-preview-copy h1, .families-copy h1, .venue-copy h1, .generic-copy h1 { font-size: clamp(27px, 8.7vw, 38px); }
-  .bilingual-intro { font-size: 10px; }
-  .bilingual-intro small { font-size: 7px; }
-  .preview-photo-card, .map-card.is-compact { height: min(35vh, 310px); }
-  .family-mini-cards { margin-top: 9px; }
-  .family-mini-cards b { font-size: 10px; }
-  .venue-copy h1 { margin-bottom: 8px; }
   .venue-address small { display: none; }
-  .about-row { width: 79%; }
-  .story-row span { font-size: 9px; }
-  .story-row small { font-size: 6px; }
-  .family-detail-title small { font-size: 6px; }
-  .family-detail-grid { margin-top: 12px; }
-  .family-detail-grid article { padding: 10px; }
-  .family-detail-grid p { font-size: 8px; }
-  .family-detail-grid article span { font-size: 7px; }
   .family-note { display: none; }
+  .viewing-tip-card { width: 90vw; padding: 28px 22px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

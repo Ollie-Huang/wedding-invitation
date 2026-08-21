@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const WEDDING_AT = new Date("2027-05-22T18:00:00+08:00").getTime();
+const WEDDING_AT = new Date("2026-12-12T18:00:00+08:00").getTime();
 
 const chapters = [
   { number: "01", short: "關於我們", eyebrow: "ABOUT US" },
@@ -36,6 +36,7 @@ export default function Home() {
   const [dragging, setDragging] = useState<number | null>(null);
   const [pull, setPull] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
+  const [viewingTipOpen, setViewingTipOpen] = useState(true);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const dragStart = useRef(0);
 
@@ -48,16 +49,20 @@ export default function Home() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(null);
-      if (open !== null) return;
-      if (event.key === "ArrowDown" || event.key === "ArrowRight") setActive((value) => (value + 1) % chapters.length);
-      if (event.key === "ArrowUp" || event.key === "ArrowLeft") setActive((value) => (value - 1 + chapters.length) % chapters.length);
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        setOpen(null);
+        setActive((value) => (value + 1) % chapters.length);
+      }
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        setOpen(null);
+        setActive((value) => (value - 1 + chapters.length) % chapters.length);
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
   const startPull = (event: React.PointerEvent<HTMLButtonElement>, index: number) => {
-    if (open !== null) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     dragStart.current = event.clientX;
     setDragging(index);
@@ -69,7 +74,10 @@ export default function Home() {
     const maxPull = Math.max(window.innerWidth * 0.34, 210);
     const next = clamp((event.clientX - dragStart.current) / maxPull, 0, 1);
     setPull(next);
-    if (next > 0.07 && active !== dragging) setActive(dragging);
+    if (next > 0.07 && active !== dragging) {
+      setOpen(null);
+      setActive(dragging);
+    }
   };
 
   const finishPull = () => {
@@ -78,7 +86,10 @@ export default function Home() {
     if (pull >= 0.68) {
       setActive(selected);
       setOpen(selected);
-    } else if (pull > 0.04) setActive(selected);
+    } else if (pull > 0.04) {
+      setOpen(null);
+      setActive(selected);
+    }
     setDragging(null);
     setPull(0);
   };
@@ -122,7 +133,11 @@ export default function Home() {
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  if (active === index) setOpen(index); else setActive(index);
+                  if (active === index && open === null) setOpen(index);
+                  else {
+                    setOpen(null);
+                    setActive(index);
+                  }
                 }
               }}
               aria-current={isActive ? "page" : undefined}
@@ -164,6 +179,20 @@ export default function Home() {
           </>
         )}
       </section>
+
+      <aside className="viewing-tip" data-dismissed={!viewingTipOpen} aria-hidden={!viewingTipOpen}>
+        <div className="viewing-tip-card">
+          <div className="rotate-device" aria-hidden="true"><i /><span>↻</span></div>
+          <p className="chapter-kicker"><span>最佳觀賞方式</span><small>BEST VIEWING EXPERIENCE</small></p>
+          <h2>建議將手機轉為橫向</h2>
+          <p>橫向觀看能完整呈現照片、拉條與展開動畫；你仍然可以選擇直向瀏覽。</p>
+          <div className="viewing-tip-actions">
+            <button onClick={() => enterFullscreen(setViewingTipOpen)}>橫向・全螢幕觀看</button>
+            <button className="tip-secondary" onClick={() => setViewingTipOpen(false)}>繼續直向瀏覽</button>
+          </div>
+          <small>iPhone／iPad 若仍顯示網址列，可從分享選單選擇「加入主畫面」，再由主畫面開啟。</small>
+        </div>
+      </aside>
     </main>
   );
 }
@@ -177,8 +206,11 @@ function AboutPreview() {
         <div className="gold-rule" aria-hidden="true" />
         <p className="bilingual-intro"><span>兩個不同步調的人，在相遇後，慢慢學會把日常走成同一個方向。</span><small>Two people with different rhythms, learning to walk toward the same tomorrow.</small></p>
       </div>
-      <div className="preview-photo-card about-preview-card">
-        <img src="about-us.jpg" alt="冠禎與玟慧的婚紗照" />
+      <div className="legacy-photo-composition" aria-label="冠禎與玟慧的婚紗照">
+        <div className="legacy-photo-back" aria-hidden="true" />
+        <div className="legacy-photo-front"><img src="about-us.jpg" alt="冠禎與玟慧的婚紗照" /></div>
+        <div className="legacy-botanical legacy-botanical-one" aria-hidden="true"><i /><i /><i /></div>
+        <div className="legacy-botanical legacy-botanical-two" aria-hidden="true"><i /><i /><i /></div>
       </div>
     </article>
   );
@@ -210,7 +242,7 @@ function VenuePreview() {
         <h1><span>相聚・台南</span><small>THE WEDDING VENUE</small></h1>
         <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
         <p className="venue-address">700 台南市中西區和意路 1 號<br /><small>No. 1, Heyi Rd., West Central Dist., Tainan City</small></p>
-        <p className="venue-time">2027. 05. 22　18:00</p>
+        <p className="venue-time">2026. 12. 12　18:00</p>
       </div>
       <MapCard compact />
     </article>
@@ -273,7 +305,7 @@ function VenueDetail() {
         <p className="chapter-kicker"><span>婚宴地點</span><small>THE VENUE</small></p>
         <h2>台南晶英酒店<small>SILKS PLACE TAINAN</small></h2>
         <dl>
-          <div><dt>日期與時間</dt><dd>2027 年 5 月 22 日・18:00</dd></div>
+          <div><dt>日期與時間</dt><dd>2026 年 12 月 12 日・18:00</dd></div>
           <div><dt>地址</dt><dd>700 台南市中西區和意路 1 號</dd></div>
           <div><dt>開車前往</dt><dd>可由永福路或西門路進入和意路；停車資訊將於確認後補上。</dd></div>
           <div><dt>大眾交通</dt><dd>從台南車站搭乘計程車約 10 分鐘；實際時間依當日路況為準。</dd></div>
@@ -306,4 +338,16 @@ function RsvpDetail() {
 
 function safeWidth() {
   return typeof window === "undefined" ? 1200 : window.innerWidth;
+}
+
+async function enterFullscreen(setViewingTipOpen: (open: boolean) => void) {
+  try {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch {
+    // Some mobile browsers only support standalone home-screen mode.
+  } finally {
+    setViewingTipOpen(false);
+  }
 }

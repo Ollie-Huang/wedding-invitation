@@ -20,6 +20,11 @@ export const metadata: Metadata = {
     description: "誠摯邀請你，見證我們的這一天。",
     images: [`${siteUrl}/og.png`],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "冠禎 & 玟慧",
+  },
 };
 
 export const viewport: Viewport = {
