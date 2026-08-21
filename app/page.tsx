@@ -2,72 +2,63 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const WEDDING_AT = new Date("2027-05-22T18:00:00+08:00").getTime();
+
 const chapters = [
-  {
-    number: "01",
-    short: "關於我們",
-    eyebrow: "ABOUT US",
-    title: "關於我們\nABOUT US",
-    subtitle: "兩個不同步調的人，慢慢走成同一個方向。",
-    detailTitle: "This is our story",
-    detailCopy: "從相遇到相伴，平凡的日子因為彼此而有了新的名字。",
-  },
-  {
-    number: "02",
-    short: "故事",
-    eyebrow: "OUR STORY",
-    title: "所有恰好的相遇，\n都慢慢走成了我們",
-    subtitle: "從一杯咖啡，到同一個未來",
-    detailTitle: "The day we met",
-    detailCopy:
-      "從第一次說你好，到決定一起走很遠。那些看似平凡的日常，讓我們確定：最好的愛情，是每一天都仍然想和對方分享。",
-  },
-  {
-    number: "03",
-    short: "婚宴",
-    eyebrow: "THE WEDDING DAY",
-    title: "一場關於愛與相聚的\n午後慶典",
-    subtitle: "2027. 05. 22 · 台北",
-    detailTitle: "Save the date",
-    detailCopy:
-      "二〇二七年五月二十二日，星期六。下午三時迎賓，四時證婚，五時三十分晚宴。地點與交通資訊將於正式版本補上。",
-  },
-  {
-    number: "04",
-    short: "回覆",
-    eyebrow: "BE OUR GUEST",
-    title: "把你的名字，\n寫進這一天的回憶裡",
-    subtitle: "期待在婚禮那天與你相見",
-    detailTitle: "Will you join us?",
-    detailCopy:
-      "這裡會放置出席回覆、飲食需求與同行人數等欄位。正式版本也可以串接你之前的婚禮詢問表單。",
-  },
+  { number: "01", short: "關於我們", eyebrow: "ABOUT US" },
+  { number: "02", short: "兩家之喜", eyebrow: "TWO FAMILIES" },
+  { number: "03", short: "婚宴地點", eyebrow: "THE VENUE" },
+  { number: "04", short: "出席回覆", eyebrow: "BE OUR GUEST" },
 ] as const;
 
 const aboutStory = [
   { zh: "我們的故事，沒有轟轟烈烈的開場。", en: "Our story did not begin with a grand gesture." },
-  { zh: "只是在一次次分享與陪伴裡，慢慢確認了彼此。", en: "It grew quietly through every conversation, every shared moment, and every day we chose to stay." },
-  { zh: "他讓平凡的日子有了期待；她讓未來變得清晰而溫柔。", en: "He gave ordinary days something to look forward to; she made the future feel clear and gentle." },
+  { zh: "只是在一次次分享與陪伴裡，慢慢確認了彼此。", en: "It grew quietly through every conversation and every shared moment." },
+  { zh: "他讓平凡的日子有了期待；她讓未來變得清晰而溫柔。", en: "He gave ordinary days something to await; she made the future feel gentle and clear." },
   { zh: "我們保留各自的模樣，也成為彼此最安心的地方。", en: "We remained ourselves, while becoming each other’s safest place." },
   { zh: "從今天起，想把往後的每一段風景，一起看完。", en: "From this day forward, we choose to see every season, side by side." },
 ] as const;
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(Math.max(value, min), max);
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+function remainingTime() {
+  const remaining = Math.max(0, WEDDING_AT - Date.now());
+  return {
+    days: Math.floor(remaining / 86400000),
+    hours: Math.floor((remaining / 3600000) % 24),
+    minutes: Math.floor((remaining / 60000) % 60),
+    seconds: Math.floor((remaining / 1000) % 60),
+  };
+}
 
 export default function Home() {
   const [active, setActive] = useState(0);
   const [dragging, setDragging] = useState<number | null>(null);
   const [pull, setPull] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
-  const [portraitDismissed, setPortraitDismissed] = useState(false);
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const dragStart = useRef(0);
-  const handleRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    setCountdown(remainingTime());
+    const timer = window.setInterval(() => setCountdown(remainingTime()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(null);
+      if (open !== null) return;
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") setActive((value) => (value + 1) % chapters.length);
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") setActive((value) => (value - 1 + chapters.length) % chapters.length);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   const startPull = (event: React.PointerEvent<HTMLButtonElement>, index: number) => {
     if (open !== null) return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    handleRef.current = event.currentTarget;
     dragStart.current = event.clientX;
     setDragging(index);
     setPull(0);
@@ -75,10 +66,10 @@ export default function Home() {
 
   const movePull = (event: React.PointerEvent<HTMLButtonElement>) => {
     if (dragging === null) return;
-    const maxPull = Math.max(window.innerWidth * 0.34, 230);
+    const maxPull = Math.max(window.innerWidth * 0.34, 210);
     const next = clamp((event.clientX - dragStart.current) / maxPull, 0, 1);
     setPull(next);
-    if (next > 0.08 && active !== dragging) setActive(dragging);
+    if (next > 0.07 && active !== dragging) setActive(dragging);
   };
 
   const finishPull = () => {
@@ -87,49 +78,40 @@ export default function Home() {
     if (pull >= 0.68) {
       setActive(selected);
       setOpen(selected);
-    } else if (pull > 0.04) {
-      setActive(selected);
-    }
+    } else if (pull > 0.04) setActive(selected);
     setDragging(null);
     setPull(0);
   };
 
-  const activateWithKeyboard = (index: number) => {
-    if (active === index) setOpen(index);
-    else setActive(index);
-  };
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(null);
-      if (open !== null) return;
-      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-        setActive((value) => (value + 1) % chapters.length);
-      }
-      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-        setActive((value) => (value - 1 + chapters.length) % chapters.length);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
-
   return (
     <main className="invitation-shell">
       <div className="paper-grain" aria-hidden="true" />
-      <header className="masthead">
-        <div className="monogram" aria-label="新人姓名縮寫">G <i>&amp;</i> W</div>
-        <p>冠禎 &amp; 玟慧</p>
+
+      <header className="masthead" aria-label="新人姓名">
+        <span className="name-ornament" aria-hidden="true">✦</span>
+        <div className="name-lockup">
+          <p>冠禎 <i>&amp;</i> 玟慧</p>
+          <small>OUR WEDDING DAY</small>
+        </div>
       </header>
+
+      <aside className="countdown" aria-label="距離婚宴開始倒數">
+        <p>COUNTDOWN <span>TO 18:00</span></p>
+        <div>
+          <b>{countdown.days}</b><small>DAYS</small><i>:</i>
+          <b>{String(countdown.hours).padStart(2, "0")}</b><small>HRS</small><i>:</i>
+          <b>{String(countdown.minutes).padStart(2, "0")}</b><small>MIN</small><i>:</i>
+          <b>{String(countdown.seconds).padStart(2, "0")}</b><small>SEC</small>
+        </div>
+      </aside>
 
       <nav className="pull-nav" aria-label="喜帖章節">
         {chapters.map((chapter, index) => {
           const isDragging = dragging === index;
           const isActive = active === index;
-          const offset = isDragging ? pull * Math.min(420, windowSafeWidth() * 0.34) : 0;
+          const offset = isDragging ? pull * Math.min(420, safeWidth() * 0.34) : 0;
           return (
             <button
-              ref={isDragging ? handleRef : null}
               key={chapter.number}
               className={`pull-handle ${isActive ? "is-active" : ""} ${isDragging ? "is-dragging" : ""}`}
               style={{ "--pull-x": `${offset}px` } as React.CSSProperties}
@@ -140,7 +122,7 @@ export default function Home() {
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  activateWithKeyboard(index);
+                  if (active === index) setOpen(index); else setActive(index);
                 }
               }}
               aria-current={isActive ? "page" : undefined}
@@ -148,9 +130,6 @@ export default function Home() {
             >
               <span className="handle-number">{chapter.number}</span>
               <span className="handle-label">{chapter.short}</span>
-              <span className="handle-line" aria-hidden="true">
-                <span className="handle-progress" />
-              </span>
               <span className="handle-arrow" aria-hidden="true">→</span>
             </button>
           );
@@ -160,130 +139,171 @@ export default function Home() {
       <section className="stage" aria-live="polite">
         <div className="frame-corner frame-corner-one" aria-hidden="true" />
         <div className="frame-corner frame-corner-two" aria-hidden="true" />
-        <div
-          className="slides"
-          style={{ transform: `translateY(-${active * 100}%)` }}
-        >
-          {chapters.map((chapter, index) => (
-            <article className={`slide slide-${index + 1}`} key={chapter.number}>
-              {index === 0 ? (
-                <>
-                  <img className="about-preview-photo" src="about-us.jpg" alt="冠禎與玟慧的婚紗照" />
-                  <div className="about-preview-vignette" aria-hidden="true" />
-                  <div className="about-preview-copy">
-                    <p className="about-kicker"><span>第一章</span><small>CHAPTER ONE</small></p>
-                    <h1><span>關於我們</span><small>ABOUT US</small></h1>
-                    <div className="about-rule" aria-hidden="true" />
-                    <p className="about-intro">
-                      <span>兩個不同步調的人，在相遇後，慢慢學會把日常走成同一個方向。</span>
-                      <small>Two people with different rhythms, learning to walk toward the same tomorrow.</small>
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="slide-copy">
-                    <p className="eyebrow">{chapter.eyebrow}</p>
-                    <h1>{chapter.title.split("\n").map((line) => <span key={line}>{line}</span>)}</h1>
-                    <div className="flourish" aria-hidden="true"><i /><b>✦</b><i /></div>
-                    <p className="subtitle">{chapter.subtitle}</p>
-                  </div>
-                  <div className="photo-composition" aria-label="照片預留區">
-                    <div className="photo-card photo-back"><span>PHOTO</span></div>
-                    <div className="photo-card photo-front">
-                      <span className="photo-index">{chapter.number}</span>
-                      {index === 1 ? (
-                        <img className="chapter-photo" src="about-us.jpg" alt="冠禎與玟慧的婚紗照" />
-                      ) : (
-                        <div className="photo-placeholder">照片／動畫<br />預留位置</div>
-                      )}
-                      <small>YOUR MOMENT HERE</small>
-                    </div>
-                    <div className="botanical botanical-one" aria-hidden="true"><i /><i /><i /></div>
-                    <div className="botanical botanical-two" aria-hidden="true"><i /><i /><i /></div>
-                  </div>
-                  <span className="giant-number" aria-hidden="true">{chapter.number}</span>
-                </>
-              )}
-            </article>
-          ))}
+        <div className="slides" style={{ transform: `translateY(-${active * 100}%)` }}>
+          <AboutPreview />
+          <FamiliesPreview />
+          <VenuePreview />
+          <RsvpPreview />
         </div>
-        <div className="stage-footer">
+
+        <footer className="stage-footer">
           <p><span>DRAG</span> 將左側緞帶向右拉動</p>
           <div className="pagination"><b>{String(active + 1).padStart(2, "0")}</b><i /><span>04</span></div>
-        </div>
-      </section>
+        </footer>
 
-      {open !== null && (
-        <section
-          className={`detail detail-${open + 1} ${open === 0 ? "about-detail" : ""}`}
-          style={{
-            "--detail-top": `${7 + open * 22}%`,
-            "--detail-bottom": `${71 - open * 22}%`,
-          } as React.CSSProperties}
-          aria-modal="true"
-          role="dialog"
-          aria-labelledby="detail-title"
-        >
-          {open === 0 ? (
-            <>
-              <img className="about-photo about-photo-muted" src="about-us.jpg" alt="" aria-hidden="true" />
-              <img className="about-photo about-photo-reveal" src="about-us.jpg" alt="" aria-hidden="true" />
-              <div className="about-detail-shade" aria-hidden="true" />
-              <div className="about-detail-content">
-                <header className="about-detail-heading">
-                  <p><span>關於我們</span><small>ABOUT US</small></p>
-                  <h2 id="detail-title"><span>兩個人的故事，</span><span>從此有了同一個方向。</span></h2>
-                </header>
-                <div className="about-story" aria-label="新人介紹">
-                  {aboutStory.map((line, index) => (
-                    <p className="story-line" style={{ "--line-index": index } as React.CSSProperties} key={line.zh}>
-                      <span>{line.zh}</span>
-                      <small>{line.en}</small>
-                    </p>
-                  ))}
-                </div>
-              </div>
-              <div className="chibi-meeting" aria-label="Q版新人相遇動畫">
-                <div className="chibi chibi-left"><i className="chibi-head" /><i className="chibi-body" /><b>Y</b></div>
-                <span className="meeting-heart" aria-hidden="true">♥</span>
-                <div className="chibi chibi-right"><i className="chibi-head" /><i className="chibi-body" /><b>C</b></div>
-              </div>
-              <p className="about-close-note"><span>按 ESC 關閉</span><small>PRESS ESC TO CLOSE</small></p>
-              <button className="detail-close" onClick={() => setOpen(null)} aria-label="關閉關於我們">×</button>
-            </>
-          ) : (
-            <>
-              {open === 1 && <img className="detail-background-photo" src="about-us.jpg" alt="" aria-hidden="true" />}
+        {open !== null && (
+          <>
+            <span className="detail-cord" style={{ "--cord-row": open } as React.CSSProperties} aria-hidden="true" />
+            <section className={`detail-panel detail-${open + 1}`} role="dialog" aria-label={`${chapters[open].short}完整內容`}>
               <button className="detail-close" onClick={() => setOpen(null)} aria-label="關閉展開內容">×</button>
-              <div className="detail-index">{chapters[open].number}</div>
-              <div className="detail-visual">
-                <span>FULL STORY</span>
-                <div className="detail-photo">完整照片／影片／動畫區域</div>
-              </div>
-              <div className="detail-copy">
-                <p className="eyebrow">{chapters[open].eyebrow}</p>
-                <h2 id="detail-title">{chapters[open].detailTitle}</h2>
-                <p>{chapters[open].detailCopy}</p>
-                {open === 3 && <button className="rsvp-demo">開啟出席回覆 <span>→</span></button>}
-                <small>按 ESC 或右上角關閉，繼續翻閱喜帖</small>
-              </div>
-            </>
-          )}
-        </section>
-      )}
-
-      <aside className="orientation-note" aria-hidden={portraitDismissed} data-dismissed={portraitDismissed}>
-        <div className="rotate-icon" aria-hidden="true"><span>↻</span></div>
-        <p className="eyebrow">BEST VIEWING EXPERIENCE</p>
-        <h2>請將裝置轉為橫向</h2>
-        <p>這封喜帖以橫式互動設計，轉向後可以看見完整畫面與拉條效果。</p>
-        <button onClick={() => setPortraitDismissed(true)}>仍要直向瀏覽</button>
-      </aside>
+              {open === 0 && <AboutDetail />}
+              {open === 1 && <FamiliesDetail />}
+              {open === 2 && <VenueDetail />}
+              {open === 3 && <RsvpDetail />}
+            </section>
+          </>
+        )}
+      </section>
     </main>
   );
 }
 
-function windowSafeWidth() {
+function AboutPreview() {
+  return (
+    <article className="slide slide-1">
+      <div className="about-preview-copy">
+        <p className="chapter-kicker"><span>第一章</span><small>CHAPTER ONE</small></p>
+        <h1><span>關於我們</span><small>ABOUT US</small></h1>
+        <div className="gold-rule" aria-hidden="true" />
+        <p className="bilingual-intro"><span>兩個不同步調的人，在相遇後，慢慢學會把日常走成同一個方向。</span><small>Two people with different rhythms, learning to walk toward the same tomorrow.</small></p>
+      </div>
+      <div className="preview-photo-card about-preview-card">
+        <img src="about-us.jpg" alt="冠禎與玟慧的婚紗照" />
+      </div>
+    </article>
+  );
+}
+
+function FamiliesPreview() {
+  return (
+    <article className="slide slide-2">
+      <div className="families-copy">
+        <p className="chapter-kicker"><span>第二章</span><small>CHAPTER TWO</small></p>
+        <h1><span>兩姓之好</span><small>TWO FAMILIES, ONE CELEBRATION</small></h1>
+        <p className="bilingual-intro"><span>兩個家庭的祝福，成為我們走向彼此最溫柔的光。</span><small>With the love of two families, we begin a new chapter together.</small></p>
+        <div className="family-mini-cards">
+          <div><small>THE GROOM</small><b>新郎・冠禎</b><span>男方家人姓名待補</span></div>
+          <i aria-hidden="true">囍</i>
+          <div><small>THE BRIDE</small><b>新娘・玟慧</b><span>女方家人姓名待補</span></div>
+        </div>
+      </div>
+      <div className="preview-photo-card family-photo"><img src="about-us.jpg" alt="冠禎與玟慧的婚紗照" /></div>
+    </article>
+  );
+}
+
+function VenuePreview() {
+  return (
+    <article className="slide slide-3">
+      <div className="venue-copy">
+        <p className="chapter-kicker"><span>第三章</span><small>CHAPTER THREE</small></p>
+        <h1><span>相聚・台南</span><small>THE WEDDING VENUE</small></h1>
+        <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
+        <p className="venue-address">700 台南市中西區和意路 1 號<br /><small>No. 1, Heyi Rd., West Central Dist., Tainan City</small></p>
+        <p className="venue-time">2027. 05. 22　18:00</p>
+      </div>
+      <MapCard compact />
+    </article>
+  );
+}
+
+function RsvpPreview() {
+  return (
+    <article className="slide slide-4 generic-slide">
+      <div className="generic-copy">
+        <p className="chapter-kicker"><span>第四章</span><small>CHAPTER FOUR</small></p>
+        <h1><span>把你的名字，</span><span>寫進這一天的回憶裡</span><small>BE OUR GUEST</small></h1>
+        <div className="gold-rule" />
+        <p className="bilingual-intro"><span>期待在婚禮那天與你相見。</span><small>We cannot wait to celebrate this day with you.</small></p>
+      </div>
+      <div className="rsvp-seal" aria-hidden="true"><b>囍</b><small>RSVP</small></div>
+    </article>
+  );
+}
+
+function AboutDetail() {
+  return (
+    <div className="about-detail-inner">
+      <div className="about-bands" aria-hidden="true">
+        {[0, 1, 2, 3, 4, 5].map((index) => <img key={index} className={`about-band about-band-${index}`} src="about-detail.jpg" alt="" />)}
+      </div>
+      <div className="about-row about-heading-row">
+        <p><span>關於我們</span><small>ABOUT US</small></p>
+        <h2>兩個人的故事，從此有了同一個方向。</h2>
+      </div>
+      {aboutStory.map((line, index) => (
+        <p className={`about-row story-row story-row-${index + 1}`} style={{ "--row-index": index + 1 } as React.CSSProperties} key={line.zh}>
+          <span>{line.zh}</span><small>{line.en}</small>
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function FamiliesDetail() {
+  return (
+    <div className="families-detail-inner">
+      <img src="about-us.jpg" alt="" aria-hidden="true" />
+      <div className="family-detail-title"><p>兩姓之好・兩家之喜</p><small>TWO FAMILIES, ONE CELEBRATION</small></div>
+      <div className="family-detail-grid">
+        <article><small>THE GROOM&apos;S FAMILY</small><h2>新郎・冠禎</h2><p>承載著家人的愛與祝福，帶著真心，走向人生嶄新的篇章。</p><span>男方家長｜姓名待補</span></article>
+        <b aria-hidden="true">囍</b>
+        <article><small>THE BRIDE&apos;S FAMILY</small><h2>新娘・玟慧</h2><p>在家人的陪伴中長成溫柔堅定的模樣，與所愛的人並肩前行。</p><span>女方家長｜姓名待補</span></article>
+      </div>
+      <p className="family-note">家長姓名與稱謂保留為可編輯欄位，待確認後替換。</p>
+    </div>
+  );
+}
+
+function VenueDetail() {
+  return (
+    <div className="venue-detail-inner">
+      <MapCard />
+      <div className="venue-detail-copy">
+        <p className="chapter-kicker"><span>婚宴地點</span><small>THE VENUE</small></p>
+        <h2>台南晶英酒店<small>SILKS PLACE TAINAN</small></h2>
+        <dl>
+          <div><dt>日期與時間</dt><dd>2027 年 5 月 22 日・18:00</dd></div>
+          <div><dt>地址</dt><dd>700 台南市中西區和意路 1 號</dd></div>
+          <div><dt>開車前往</dt><dd>可由永福路或西門路進入和意路；停車資訊將於確認後補上。</dd></div>
+          <div><dt>大眾交通</dt><dd>從台南車站搭乘計程車約 10 分鐘；實際時間依當日路況為準。</dd></div>
+        </dl>
+        <a className="map-link" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟 Google 地圖 <span>↗</span></a>
+      </div>
+    </div>
+  );
+}
+
+function MapCard({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`map-card ${compact ? "is-compact" : ""}`}>
+      <iframe title="台南晶英酒店 Google 地圖預覽" loading="lazy" referrerPolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97&output=embed" />
+      <div className="map-caption"><span>台南晶英酒店</span><small>SILKS PLACE TAINAN</small></div>
+    </div>
+  );
+}
+
+function RsvpDetail() {
+  return (
+    <div className="rsvp-detail-inner">
+      <p className="chapter-kicker"><span>出席回覆</span><small>BE OUR GUEST</small></p>
+      <h2>期待與你相見</h2>
+      <p>這裡將串接正式的出席回覆表單，收集出席人數、飲食需求與同行賓客資訊。</p>
+      <button type="button">出席表單・即將開放 <span>→</span></button>
+    </div>
+  );
+}
+
+function safeWidth() {
   return typeof window === "undefined" ? 1200 : window.innerWidth;
 }
