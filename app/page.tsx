@@ -144,7 +144,7 @@ export default function Home() {
       <div className="scroll-pages" ref={scrollRoot}>
         <section className="story-page story-page-1" data-page="0" ref={(node) => { pageRefs.current[0] = node; }}><AboutPreview /><DogRibbon label="拉開・關於我們" onOpen={() => setOpen(0)} /></section>
         <section className="story-page story-page-2" data-page="1" ref={(node) => { pageRefs.current[1] = node; }}><FamiliesPreview /><DogRibbon label="拉開・兩家之囍" onOpen={() => setOpen(1)} /></section>
-        <section className="story-page story-page-3" data-page="2" ref={(node) => { pageRefs.current[2] = node; }}><VenuePreview /><DogRibbon label="拉開・婚宴地點" onOpen={() => setOpen(2)} /></section>
+        <section className="story-page story-page-3" data-page="2" ref={(node) => { pageRefs.current[2] = node; }}><VenuePreview onOpen={() => setOpen(2)} /></section>
         <section className="story-page story-page-4" data-page="3" ref={(node) => { pageRefs.current[3] = node; }}><RsvpPreview /><DogRibbon label="拉開・出席回覆" onOpen={() => setOpen(3)} /></section>
       </div>
 
@@ -168,6 +168,7 @@ export default function Home() {
             {open === 2 && <VenueDetail />}
             {open === 3 && <RsvpDetail />}
           </div>
+          {open === 2 && <div className="venue-opening" aria-hidden="true"><span /><i /><b /></div>}
         </section>
       )}
 
@@ -257,10 +258,10 @@ function FamiliesPreview() {
       <div className="family-paper-card">
         <div className="family-copy-new">
           <div className="family-title-row">
-            <h1><span>兩家</span><span>之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
+            <h1><span>兩家之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
             <span className="xi-stamp" aria-hidden="true">囍</span>
           </div>
-          <p className="bilingual-intro"><span>兩姓締盟，良緣永結；承兩家之愛，赴一世之約。</span><small>Two families become one, and our forever begins.</small></p>
+          <p className="bilingual-intro"><span>兩姓締盟，良緣永結<br />承兩家之愛，赴一世之約。</span><small>Two families become one, and our forever begins.</small></p>
           <div className="families-date"><span>2026</span><b>12 · 12</b><small>TAINAN · SILKS PLACE</small></div>
         </div>
         <figure className="family-gradient-photo">
@@ -272,16 +273,20 @@ function FamiliesPreview() {
   );
 }
 
-function VenuePreview() {
+function VenuePreview({ onOpen }: { onOpen: () => void }) {
   return (
     <article className="page-preview venue-page-preview">
       <div className="venue-copy vertical-copy-card">
-        <h1><span>相聚・台南</span><small>THE WEDDING VENUE</small></h1>
+        <p className="venue-eyebrow">THE WEDDING VENUE</p>
+        <h1><span>相聚・台南</span><small>MEET US IN TAINAN</small></h1>
         <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
         <p className="venue-address">700 台南市中西區和意路 1 號<br /><small>No. 1, Heyi Rd., West Central Dist., Tainan City</small></p>
-        <p className="venue-time">2026. 12. 12　18:00</p>
       </div>
-      <MapCard compact />
+      <div className="venue-preview-visual">
+        <div className="venue-logo-card"><img src="silks-place-logo.png" alt="台南晶英酒店 Silks Place Tainan" /></div>
+        <figure className="venue-route-photo"><img src="silks-driving-route.png" alt="台南晶英酒店開車路線與停車入口示意圖" /></figure>
+        <button type="button" className="venue-detail-trigger" onClick={onOpen}>點擊查看詳細交通資訊 <span>→</span></button>
+      </div>
     </article>
   );
 }
@@ -352,20 +357,42 @@ function FamiliesDetail() {
 }
 
 function VenueDetail() {
+  const transportOptions = [
+    { id: "rail", icon: "高", label: "高鐵", title: "高鐵快捷公車", text: "高鐵至台南站後，由 2 號出口前往快捷公車站，搭乘「高鐵台南站－台南市政府」路線，於小西門站下車，再沿和意路步行約 50 公尺抵達。" },
+    { id: "drive", icon: "車", label: "開車", title: "自行開車", text: "由中山高速公路下仁德交流道，往台南市區方向行駛，經中山路、東門路、府前路，左轉永福路後右轉和意路，即可抵達台南晶英酒店。" },
+    { id: "bus", icon: "巴", label: "公車", title: "市區公車", text: "可搭乘 1、2、5、11、18、紅2、綠17、藍24或紅幹線，於「新光三越新天地站」下車，步行約 3 分鐘即可抵達。" },
+    { id: "parking", icon: "P", label: "停車", title: "飯店地下停車場", text: "飯店專屬停車場位於 B5－B7，可由永福路或和意路入口進入。館內用餐消費至多折抵 4 小時；離場前請至 B5－B7 梯廳繳費機輸入車牌確認折抵。" },
+  ] as const;
+  const [selectedTransport, setSelectedTransport] = useState<(typeof transportOptions)[number]["id"]>("rail");
+  const selected = transportOptions.find((option) => option.id === selectedTransport) ?? transportOptions[0];
+
   return (
     <div className="venue-detail-inner">
-      <MapCard />
-      <div className="venue-detail-copy">
-        <p className="chapter-kicker"><span>婚宴地點</span><small>THE VENUE</small></p>
-        <h2>台南晶英酒店<small>SILKS PLACE TAINAN</small></h2>
-        <dl>
-          <div><dt>日期與時間</dt><dd>2026 年 12 月 12 日・18:00</dd></div>
-          <div><dt>地址</dt><dd>700 台南市中西區和意路 1 號</dd></div>
-          <div><dt>開車前往</dt><dd>可由永福路或西門路進入和意路；停車資訊將於確認後補上。</dd></div>
-          <div><dt>大眾交通</dt><dd>從台南車站搭乘計程車約 10 分鐘；實際時間依當日路況為準。</dd></div>
-        </dl>
-        <a className="map-link" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟 Google 地圖 <span>↗</span></a>
-      </div>
+      <section className="venue-map-panel">
+        <div className="venue-map-crop"><img src="silks-traffic-guide.png" alt="台南晶英酒店周邊交通地圖" /></div>
+        <div className="venue-contact-card">
+          <p><span>地址</span><b>700 台南市中西區和意路 1 號</b><small>No. 1, Heyi Rd., West Central Dist., Tainan City 700</small></p>
+          <p><span>聯絡電話</span><b>+886 6 213 6290</b></p>
+          <a href="https://www.silksplace-tainan.com.tw/" target="_blank" rel="noreferrer">www.silksplace-tainan.com.tw ↗</a>
+          <a className="map-link" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟 Google 地圖 <span>↗</span></a>
+        </div>
+      </section>
+      <section className="transport-panel">
+        <p className="transport-kicker">ARRIVAL GUIDE</p>
+        <h2>前往晶英<small>選擇交通方式，查看對應路線資訊</small></h2>
+        <div className="transport-tabs" role="tablist" aria-label="交通方式">
+          {transportOptions.map((option) => (
+            <button key={option.id} type="button" role="tab" aria-selected={selectedTransport === option.id} className={selectedTransport === option.id ? "is-active" : ""} onClick={() => setSelectedTransport(option.id)}>
+              <i aria-hidden="true">{option.icon}</i><span>{option.label}</span>
+            </button>
+          ))}
+        </div>
+        <div className="transport-slide" key={selected.id} role="tabpanel">
+          <small>{selected.label.toUpperCase()} INFORMATION</small>
+          <h3>{selected.title}</h3>
+          <p>{selected.text}</p>
+        </div>
+      </section>
     </div>
   );
 }

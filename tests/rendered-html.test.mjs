@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.7.2 invitation refines ribbon interaction and family-page framing", async () => {
+test("v0.8.0 invitation restores family gradients and adds the interactive arrival guide", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -26,6 +26,14 @@ test("v0.7.2 invitation refines ribbon interaction and family-page framing", asy
   assert.match(source, /landscapeTipOpen/);
   assert.match(source, /按住雙犬或緞帶/);
   assert.match(source, /台南晶英酒店・大成廳/);
+  assert.match(source, /silks-place-logo\.png/);
+  assert.match(source, /silks-driving-route\.png/);
+  assert.match(source, /silks-traffic-guide\.png/);
+  assert.match(source, /點擊查看詳細交通資訊/);
+  assert.match(source, /selectedTransport/);
+  assert.match(source, /高鐵快捷公車/);
+  assert.match(source, /B5－B7/);
+  assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
   assert.doesNotMatch(source, />第二章</);
   assert.doesNotMatch(source, /PULL THE RIBBON TO OPEN/);
@@ -42,6 +50,10 @@ test("v0.7.2 invitation refines ribbon interaction and family-page framing", asy
   assert.match(styles, /--ribbon-opacity/);
   assert.match(styles, /portrait-view-tip/);
   assert.match(styles, /family-title-row/);
+  assert.match(styles, /venue-opening/);
+  assert.match(styles, /venue-light-run/);
+  assert.match(styles, /transport-tabs/);
+  assert.match(styles, /transport-slide-in/);
   assert.match(styles, /scaleX\(-1\)/);
   assert.match(styles, /scroll-snap-type: y mandatory/);
   assert.match(styles, /@media \(max-width: 760px\)/);
