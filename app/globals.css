@@ -699,3 +699,145 @@ button { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* v0.8.1 — family whitespace and venue preview/detail corrections. */
+.family-paper-card {
+  width: min(100%, 1120px);
+  height: min(72vh, 690px);
+  max-height: none;
+  aspect-ratio: auto;
+  grid-template-columns: 48% 52%;
+}
+.family-copy-new { padding: clamp(38px, 5vw, 72px); }
+.family-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(68px, 6.5vw, 86px);
+  align-items: center;
+  gap: clamp(18px, 2vw, 28px);
+}
+.family-title-row h1 { font-size: clamp(40px, 4.4vw, 66px); }
+.family-title-row .xi-stamp {
+  place-self: center;
+  width: clamp(54px, 5vw, 68px);
+  height: clamp(54px, 5vw, 68px);
+  margin: 0;
+  border-width: 3px;
+  font-size: clamp(31px, 3vw, 44px);
+  user-select: none;
+}
+.family-gradient-photo {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #76242e;
+}
+.family-gradient-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.family-gradient-photo::after {
+  inset: 0;
+  background:
+    linear-gradient(90deg, #f4ead9 0%, rgba(244,234,217,.76) 13%, rgba(244,234,217,.18) 31%, transparent 49%),
+    linear-gradient(0deg, rgba(75,10,19,.42), transparent 39%);
+}
+
+.venue-copy { position: relative; padding-bottom: clamp(108px, 15vh, 150px); }
+.venue-logo-mark {
+  position: absolute;
+  right: clamp(20px, 2.4vw, 38px);
+  bottom: clamp(18px, 2.8vh, 32px);
+  display: block;
+  width: clamp(108px, 11vw, 154px);
+  height: auto;
+  opacity: .82;
+  mix-blend-mode: multiply;
+}
+.venue-preview-visual { grid-template-rows: minmax(0, 1fr) auto; }
+.venue-route-photo {
+  align-self: center;
+  justify-self: center;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: .98 / 1;
+  overflow: hidden;
+  border: 0;
+  background: #f1efe8;
+}
+.venue-route-photo img {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+
+.transport-panel {
+  color: #f8f2e8;
+  background: linear-gradient(145deg, #203847 0%, #294b5a 58%, #19303d 100%);
+}
+.transport-kicker { color: #f0ce8d; text-shadow: 0 1px 8px rgba(0,0,0,.32); }
+.transport-panel h2 { color: #fff8eb; text-shadow: 0 2px 14px rgba(0,0,0,.25); }
+.transport-panel h2 small { color: #d6e1e3; }
+
+@media (max-width: 760px) {
+  .family-paper-card {
+    width: 100%;
+    height: 90%;
+    grid-template-columns: 1fr;
+    grid-template-rows: 52% 48%;
+  }
+  .family-copy-new { padding: 23px 25px 39px; }
+  .family-title-row { grid-template-columns: minmax(0, 1fr) 62px; gap: 9px; }
+  .family-title-row h1 { font-size: clamp(29px, 8.3vw, 39px); }
+  .family-title-row .xi-stamp { width: 50px; height: 50px; margin: 0; border-width: 3px; font-size: 29px; }
+  .family-gradient-photo { width: 100%; height: 100%; margin: 0; padding: 0; border: 0; }
+  .family-gradient-photo img { object-fit: contain; object-position: center; }
+  .family-gradient-photo::after { inset: 0; }
+
+  .venue-copy { padding: 20px 22px 76px; }
+  .venue-logo-mark { right: 16px; bottom: 10px; width: 92px; }
+  .venue-preview-visual { grid-template-rows: minmax(0, 1fr) auto; }
+  .venue-route-photo { width: auto; height: 100%; max-width: 100%; aspect-ratio: .98 / 1; }
+
+  .detail-theme-3 .detail-sheet { overflow: hidden; }
+  .venue-detail-inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    background: none;
+  }
+  .venue-map-panel,
+  .transport-panel {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .venue-map-panel {
+    justify-content: center;
+    padding: 54px 20px 28px;
+    overflow: hidden;
+    background: #f2f2ee;
+  }
+  .venue-map-crop { flex: 0 0 auto; width: 100%; aspect-ratio: 1.42 / 1; }
+  .venue-contact-card { flex: 0 0 auto; }
+  .transport-panel {
+    justify-content: center;
+    padding: 54px 22px 34px;
+    overflow: hidden;
+    background: linear-gradient(145deg, #203847 0%, #294b5a 58%, #19303d 100%);
+  }
+}

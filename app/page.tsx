@@ -259,7 +259,7 @@ function FamiliesPreview() {
         <div className="family-copy-new">
           <div className="family-title-row">
             <h1><span>兩家之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
-            <span className="xi-stamp" aria-hidden="true">囍</span>
+            <span className="xi-stamp" aria-hidden="true" />
           </div>
           <p className="bilingual-intro"><span>兩姓締盟，良緣永結<br />承兩家之愛，赴一世之約。</span><small>Two families become one, and our forever begins.</small></p>
           <div className="families-date"><span>2026</span><b>12 · 12</b><small>TAINAN · SILKS PLACE</small></div>
@@ -281,9 +281,9 @@ function VenuePreview({ onOpen }: { onOpen: () => void }) {
         <h1><span>相聚・台南</span><small>MEET US IN TAINAN</small></h1>
         <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
         <p className="venue-address">700 台南市中西區和意路 1 號<br /><small>No. 1, Heyi Rd., West Central Dist., Tainan City</small></p>
+        <img className="venue-logo-mark" src="silks-place-logo.png" alt="台南晶英酒店 Silks Place Tainan" />
       </div>
       <div className="venue-preview-visual">
-        <div className="venue-logo-card"><img src="silks-place-logo.png" alt="台南晶英酒店 Silks Place Tainan" /></div>
         <figure className="venue-route-photo"><img src="silks-driving-route.png" alt="台南晶英酒店開車路線與停車入口示意圖" /></figure>
         <button type="button" className="venue-detail-trigger" onClick={onOpen}>點擊查看詳細交通資訊 <span>→</span></button>
       </div>

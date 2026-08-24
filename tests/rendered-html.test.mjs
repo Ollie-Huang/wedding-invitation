@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.0 invitation restores family gradients and adds the interactive arrival guide", async () => {
+test("v0.8.1 invitation corrects the family seal and splits the mobile arrival guide", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -33,6 +33,9 @@ test("v0.8.0 invitation restores family gradients and adds the interactive arriv
   assert.match(source, /selectedTransport/);
   assert.match(source, /高鐵快捷公車/);
   assert.match(source, /B5－B7/);
+  assert.match(source, /className="xi-stamp" aria-hidden="true" \/>/);
+  assert.match(source, /className="venue-logo-mark"/);
+  assert.doesNotMatch(source, /venue-logo-card/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
   assert.doesNotMatch(source, />第二章</);
@@ -54,6 +57,8 @@ test("v0.8.0 invitation restores family gradients and adds the interactive arriv
   assert.match(styles, /venue-light-run/);
   assert.match(styles, /transport-tabs/);
   assert.match(styles, /transport-slide-in/);
+  assert.match(styles, /mix-blend-mode: multiply/);
+  assert.match(styles, /\.venue-map-panel,\s*\.transport-panel/);
   assert.match(styles, /scaleX\(-1\)/);
   assert.match(styles, /scroll-snap-type: y mandatory/);
   assert.match(styles, /@media \(max-width: 760px\)/);
