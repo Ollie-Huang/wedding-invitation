@@ -33,13 +33,10 @@ function remainingTime() {
 
 export default function Home() {
   const [active, setActive] = useState(0);
-  const [dragging, setDragging] = useState<number | null>(null);
-  const [pull, setPull] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
-  const [viewingTipOpen, setViewingTipOpen] = useState(true);
-  const [canvasFit, setCanvasFit] = useState({ fitted: false, wide: false, scale: 1, height: 900, left: 0, top: 0 });
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const dragStart = useRef(0);
+  const scrollRoot = useRef<HTMLDivElement>(null);
+  const pageRefs = useRef<Array<HTMLElement | null>>([]);
 
   useEffect(() => {
     setCountdown(remainingTime());
@@ -48,109 +45,37 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const viewport = window.visualViewport;
-    const syncCanvasScale = () => {
-      const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-      const isPortraitDevice = window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
-      if (!isTouchDevice && !isPortraitDevice) {
-        setCanvasFit({ fitted: false, wide: false, scale: 1, height: 900, left: 0, top: 0 });
-        return;
-      }
-
-      const visibleWidth = viewport?.width ?? window.innerWidth;
-      const visibleHeight = viewport?.height ?? window.innerHeight;
-      const safeMargin = 12;
-      const isLandscape = visibleWidth > visibleHeight;
-      const designHeight = isTouchDevice && isLandscape
-        ? clamp(1600 * (visibleHeight - safeMargin * 2) / (visibleWidth - safeMargin * 2), 560, 900)
-        : 900;
-      setCanvasFit({
-        fitted: true,
-        wide: designHeight < 820,
-        scale: Math.max(0.1, Math.min((visibleWidth - safeMargin * 2) / 1600, (visibleHeight - safeMargin * 2) / designHeight)),
-        height: Math.round(designHeight),
-        left: (viewport?.offsetLeft ?? 0) + visibleWidth / 2,
-        top: (viewport?.offsetTop ?? 0) + visibleHeight / 2,
-      });
-    };
-    syncCanvasScale();
-    window.addEventListener("resize", syncCanvasScale);
-    window.addEventListener("orientationchange", syncCanvasScale);
-    viewport?.addEventListener("resize", syncCanvasScale);
-    viewport?.addEventListener("scroll", syncCanvasScale);
-    return () => {
-      window.removeEventListener("resize", syncCanvasScale);
-      window.removeEventListener("orientationchange", syncCanvasScale);
-      viewport?.removeEventListener("resize", syncCanvasScale);
-      viewport?.removeEventListener("scroll", syncCanvasScale);
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(Number((visible.target as HTMLElement).dataset.page ?? 0));
+      },
+      { root: scrollRoot.current, threshold: [0.45, 0.6, 0.75] },
+    );
+    pageRefs.current.forEach((page) => page && observer.observe(page));
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(null);
-      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-        setOpen(null);
-        setActive((value) => (value + 1) % chapters.length);
-      }
-      if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-        setOpen(null);
-        setActive((value) => (value - 1 + chapters.length) % chapters.length);
-      }
+      if (open !== null) return;
+      if (event.key === "ArrowDown" || event.key === "PageDown") goToPage(Math.min(active + 1, chapters.length - 1));
+      if (event.key === "ArrowUp" || event.key === "PageUp") goToPage(Math.max(active - 1, 0));
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  }, [active, open]);
 
-  const startPull = (event: React.PointerEvent<HTMLButtonElement>, index: number) => {
-    event.currentTarget.setPointerCapture(event.pointerId);
-    dragStart.current = event.clientX;
-    setDragging(index);
-    setPull(0);
-  };
-
-  const movePull = (event: React.PointerEvent<HTMLButtonElement>) => {
-    if (dragging === null) return;
-    const maxPull = Math.max(window.innerWidth * 0.34, 210);
-    const next = clamp((event.clientX - dragStart.current) / maxPull, 0, 1);
-    setPull(next);
-    if (next > 0.07 && active !== dragging) {
-      setOpen(null);
-      setActive(dragging);
-    }
-  };
-
-  const finishPull = () => {
-    if (dragging === null) return;
-    const selected = dragging;
-    if (pull >= 0.68) {
-      setActive(selected);
-      setOpen(selected);
-    } else if (pull > 0.04) {
-      setOpen(null);
-      setActive(selected);
-    }
-    setDragging(null);
-    setPull(0);
+  const goToPage = (index: number) => {
+    pageRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <main className={`invitation-shell theme-${active + 1}`}>
-      <div className="paper-grain" aria-hidden="true" />
-
-      <div
-        className="invitation-canvas"
-        data-fitted={canvasFit.fitted}
-        data-wide={canvasFit.wide}
-        style={{
-          "--canvas-scale": canvasFit.scale,
-          "--canvas-height": `${canvasFit.height}px`,
-          "--canvas-left": `${canvasFit.left}px`,
-          "--canvas-top": `${canvasFit.top}px`,
-        } as React.CSSProperties}
-      >
-
-      <header className="masthead" aria-label="新人姓名">
+    <main className={`vertical-invitation active-page-${active + 1}`}>
+      <header className="vertical-masthead" aria-label="新人姓名">
         <span className="name-ornament" aria-hidden="true">✦</span>
         <div className="name-lockup">
           <p>冠禎 <i>&amp;</i> 玟慧</p>
@@ -158,7 +83,7 @@ export default function Home() {
         </div>
       </header>
 
-      <aside className="countdown" aria-label="距離婚宴開始倒數">
+      <aside className="vertical-countdown" aria-label="距離婚宴開始倒數">
         <p>COUNTDOWN <span>TO 18:00</span></p>
         <div>
           <b>{countdown.days}</b><small>DAYS</small><i>:</i>
@@ -168,102 +93,90 @@ export default function Home() {
         </div>
       </aside>
 
-      <nav className="pull-nav" aria-label="喜帖章節">
-        {chapters.map((chapter, index) => {
-          const isDragging = dragging === index;
-          const isActive = active === index;
-          const offset = isDragging ? pull * Math.min(420, safeWidth() * 0.34) : 0;
-          return (
-            <button
-              key={chapter.number}
-              className={`pull-handle ${isActive ? "is-active" : ""} ${isDragging ? "is-dragging" : ""}`}
-              style={{ "--pull-x": `${offset}px` } as React.CSSProperties}
-              onPointerDown={(event) => startPull(event, index)}
-              onPointerMove={movePull}
-              onPointerUp={finishPull}
-              onPointerCancel={finishPull}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  if (active === index && open === null) setOpen(index);
-                  else {
-                    setOpen(null);
-                    setActive(index);
-                  }
-                }
-              }}
-              aria-current={isActive ? "page" : undefined}
-              aria-label={`${chapter.short}。輕拉切換，拉到底展開內容`}
-            >
-              <span className="handle-number">{chapter.number}</span>
-              <span className="handle-label">{chapter.short}</span>
-              <span className="handle-arrow" aria-hidden="true">→</span>
-            </button>
-          );
-        })}
+      <nav className="page-dots" aria-label="喜帖章節導覽">
+        {chapters.map((chapter, index) => (
+          <button key={chapter.number} className={active === index ? "is-active" : ""} onClick={() => goToPage(index)} aria-label={`前往${chapter.short}`} aria-current={active === index ? "page" : undefined}>
+            <span>{chapter.number}</span><i />
+          </button>
+        ))}
       </nav>
 
-      <section className="stage" aria-live="polite">
-        <div className="frame-corner frame-corner-one" aria-hidden="true" />
-        <div className="frame-corner frame-corner-two" aria-hidden="true" />
-        <div className="slides" style={{ transform: `translateY(-${active * 100}%)` }}>
-          <AboutPreview />
-          <FamiliesPreview />
-          <VenuePreview />
-          <RsvpPreview />
-        </div>
-
-        <footer className="stage-footer">
-          <p><span>DRAG</span> 將左側緞帶向右拉動</p>
-          <div className="pagination"><b>{String(active + 1).padStart(2, "0")}</b><i /><span>04</span></div>
-        </footer>
-
-        {open !== null && (
-          <>
-            <span className="detail-cord" style={{ "--cord-row": open } as React.CSSProperties} aria-hidden="true" />
-            <section className={`detail-panel detail-${open + 1}`} role="dialog" aria-label={`${chapters[open].short}完整內容`}>
-              <button className="detail-close" onClick={() => setOpen(null)} aria-label="關閉展開內容">×</button>
-              {open === 0 && <AboutDetail />}
-              {open === 1 && <FamiliesDetail />}
-              {open === 2 && <VenueDetail />}
-              {open === 3 && <RsvpDetail />}
-            </section>
-          </>
-        )}
-      </section>
+      <div className="scroll-pages" ref={scrollRoot}>
+        <section className="story-page story-page-1" data-page="0" ref={(node) => { pageRefs.current[0] = node; }}><AboutPreview /><DogRibbon label="拉開・關於我們" onOpen={() => setOpen(0)} /></section>
+        <section className="story-page story-page-2" data-page="1" ref={(node) => { pageRefs.current[1] = node; }}><FamiliesPreview /><DogRibbon label="拉開・兩家之囍" onOpen={() => setOpen(1)} /></section>
+        <section className="story-page story-page-3" data-page="2" ref={(node) => { pageRefs.current[2] = node; }}><VenuePreview /><DogRibbon label="拉開・婚宴地點" onOpen={() => setOpen(2)} /></section>
+        <section className="story-page story-page-4" data-page="3" ref={(node) => { pageRefs.current[3] = node; }}><RsvpPreview /><DogRibbon label="拉開・出席回覆" onOpen={() => setOpen(3)} /></section>
       </div>
 
-      <aside className="viewing-tip" data-dismissed={!viewingTipOpen} aria-hidden={!viewingTipOpen}>
-        <div className="viewing-tip-card">
-          <div className="rotate-device" aria-hidden="true"><i /><span>↻</span></div>
-          <p className="chapter-kicker"><span>最佳觀賞方式</span><small>BEST VIEWING EXPERIENCE</small></p>
-          <h2>建議將手機轉為橫向</h2>
-          <p>橫向觀看時，喜帖會依照瀏覽器目前可見範圍自動延展排版；你仍然可以選擇直向瀏覽。</p>
-          <div className="viewing-tip-actions">
-            <button onClick={() => setViewingTipOpen(false)}>開始瀏覽喜帖</button>
-            <button className="tip-secondary" onClick={() => setViewingTipOpen(false)}>繼續直向瀏覽</button>
+      {open !== null && (
+        <section className={`detail-overlay detail-theme-${open + 1}`} role="dialog" aria-modal="true" aria-label={`${chapters[open].short}完整內容`}>
+          <button className="detail-close" onClick={() => setOpen(null)} aria-label="關閉展開內容">×</button>
+          <div className="detail-sheet">
+            {open === 0 && <AboutDetail />}
+            {open === 1 && <FamiliesDetail />}
+            {open === 2 && <VenueDetail />}
+            {open === 3 && <RsvpDetail />}
           </div>
-          <small>不需要加入主畫面，也不需要使用全螢幕；網址列出現時會自動保留安全空間。</small>
-        </div>
-      </aside>
+        </section>
+      )}
     </main>
+  );
+}
+
+function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
+  const [pull, setPull] = useState(0);
+  const dragging = useRef(false);
+  const startX = useRef(0);
+
+  const finish = () => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    if (pull >= 0.68) onOpen();
+    setPull(0);
+  };
+
+  return (
+    <button
+      className="dog-ribbon-opener"
+      style={{ "--dog-pull-x": `${pull * 120}px`, "--dog-progress": `${pull * 100}%` } as React.CSSProperties}
+      onPointerDown={(event) => {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        dragging.current = true;
+        startX.current = event.clientX;
+        setPull(0);
+      }}
+      onPointerMove={(event) => {
+        if (!dragging.current) return;
+        setPull(clamp((event.clientX - startX.current) / 170, 0, 1));
+      }}
+      onPointerUp={finish}
+      onPointerCancel={finish}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+      aria-label={`${label}，將狗狗與緞帶向右拉到底`}
+    >
+      <span className="dog-illustration"><img src="dog-ribbon-guide.gif" alt="黃金獵犬與長毛臘腸拉著緞帶" /></span>
+      <span className="dog-guide-copy"><b>{label}</b><small>PULL THE RIBBON TO OPEN</small></span>
+      <i className="dog-pull-track" aria-hidden="true"><span /></i>
+    </button>
   );
 }
 
 function AboutPreview() {
   return (
-    <article className="slide slide-1">
-      <div className="about-preview-copy">
+    <article className="page-preview about-page-preview">
+      <div className="about-portrait">
+        <div className="about-photo-layer"><img src="about-us.jpg" alt="冠禎與玟慧在中式建築前的婚紗照" /></div>
+      </div>
+      <div className="about-preview-copy vertical-copy-card">
         <p className="chapter-kicker"><span>第一章</span><small>CHAPTER ONE</small></p>
         <h1><span>關於我們</span><small>ABOUT US</small></h1>
         <div className="gold-rule" aria-hidden="true" />
         <p className="bilingual-intro"><span>兩個不同步調的人，在相遇後，慢慢學會把日常走成同一個方向。</span><small>Two people with different rhythms, learning to walk toward the same tomorrow.</small></p>
-      </div>
-      <div className="legacy-photo-composition" aria-label="冠禎與玟慧的婚紗照">
-        <div className="legacy-photo-back" aria-hidden="true" />
-        <div className="legacy-photo-front"><img src="about-us.jpg" alt="冠禎與玟慧的婚紗照" /></div>
-        <div className="legacy-botanical legacy-botanical-one" aria-hidden="true"><i /><i /><i /></div>
-        <div className="legacy-botanical legacy-botanical-two" aria-hidden="true"><i /><i /><i /></div>
       </div>
     </article>
   );
@@ -271,19 +184,19 @@ function AboutPreview() {
 
 function FamiliesPreview() {
   return (
-    <article className="slide slide-2">
-      <figure className="family-cover-photo">
-        <img src="families-cover.jpg" alt="冠禎、玟慧與兩隻狗狗的婚紗照" />
-        <figcaption>OUR FAMILY PORTRAIT · 2026</figcaption>
-      </figure>
-      <div className="families-copy">
-        <p className="chapter-kicker"><span>第二章</span><small>CHAPTER TWO</small></p>
-        <div className="families-heading">
-          <span className="double-happiness" aria-hidden="true">囍</span>
+    <article className="page-preview families-page-preview">
+      <div className="family-paper-card">
+        <div className="family-copy-new">
+          <p className="chapter-kicker"><span>第二章</span><small>CHAPTER TWO</small></p>
+          <span className="xi-stamp" aria-hidden="true">囍</span>
           <h1><span>兩家之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
+          <p className="bilingual-intro"><span>兩姓締盟，良緣永結；承兩家之愛，赴一世之約。</span><small>Two families become one, and our forever begins.</small></p>
+          <div className="families-date"><span>2026</span><b>12 · 12</b><small>TAINAN · SILKS PLACE</small></div>
         </div>
-        <p className="bilingual-intro"><span>承兩家之愛，結一世之好。</span><small>With the love of two families, we begin our forever.</small></p>
-        <div className="families-date"><span>2026</span><b>12 · 12</b><small>TAINAN · SILKS PLACE</small></div>
+        <figure className="family-gradient-photo">
+          <img src="families-cover.jpg" alt="冠禎、玟慧與兩隻狗狗的婚紗照" />
+          <figcaption>WITH OUR BELOVED FAMILY</figcaption>
+        </figure>
       </div>
     </article>
   );
@@ -291,8 +204,8 @@ function FamiliesPreview() {
 
 function VenuePreview() {
   return (
-    <article className="slide slide-3">
-      <div className="venue-copy">
+    <article className="page-preview venue-page-preview">
+      <div className="venue-copy vertical-copy-card">
         <p className="chapter-kicker"><span>第三章</span><small>CHAPTER THREE</small></p>
         <h1><span>相聚・台南</span><small>THE WEDDING VENUE</small></h1>
         <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
@@ -306,8 +219,8 @@ function VenuePreview() {
 
 function RsvpPreview() {
   return (
-    <article className="slide slide-4 generic-slide">
-      <div className="generic-copy">
+    <article className="page-preview rsvp-page-preview">
+      <div className="generic-copy vertical-copy-card">
         <p className="chapter-kicker"><span>第四章</span><small>CHAPTER FOUR</small></p>
         <h1><span>把你的名字，</span><span>寫進這一天的回憶裡</span><small>BE OUR GUEST</small></h1>
         <div className="gold-rule" />

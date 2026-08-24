@@ -1,39 +1,33 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.6.1 invitation adds a wide touch layout and redesigned family chapter", async () => {
+test("v0.7 invitation uses vertical snap pages and dog-ribbon detail gestures", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(source, /冠禎 <i>&amp;<\/i> 玟慧/);
-  assert.doesNotMatch(source, /G <i>&amp;<\/i> W/);
-  assert.match(source, /about-detail\.jpg/);
-  assert.match(source, /about-band-\$\{index\}/);
-  assert.match(source, /台南晶英酒店/);
-  assert.match(source, /google\.com\/maps/);
-  assert.match(source, /TWO FAMILIES, ONE JOY/);
-  assert.match(source, /WEDDING_AT/);
-  assert.match(source, /2026-12-12T18:00:00\+08:00/);
-  assert.match(source, /legacy-photo-composition/);
-  assert.match(source, /viewing-tip/);
-  assert.doesNotMatch(source, /requestFullscreen/);
-  assert.doesNotMatch(source, /mobile-fullscreen-toggle/);
-  assert.match(source, /visualViewport/);
-  assert.match(source, /canvasFit/);
+
+  assert.match(source, /scroll-pages/);
+  assert.match(source, /story-page story-page-1/);
+  assert.match(source, /story-page story-page-4/);
+  assert.match(source, /IntersectionObserver/);
+  assert.match(source, /scrollIntoView/);
+  assert.match(source, /DogRibbon/);
+  assert.match(source, /dog-ribbon-guide\.gif/);
+  assert.match(source, /黃金獵犬與長毛臘腸/);
   assert.match(source, /families-cover\.jpg/);
   assert.match(source, /families-detail\.jpg/);
-  assert.doesNotMatch(source, /chibi-umbrella\.png/);
+  assert.match(source, /2026-12-12T18:00:00\+08:00/);
   assert.match(source, /黃春安、謝秀鳳/);
   assert.match(source, /李文獎、黃意芬/);
-  assert.match(source, /大成廳/);
-  assert.match(styles, /\.theme-2/);
-  assert.match(styles, /invitation-canvas\[data-fitted="true"\]/);
-  assert.match(styles, /data-wide="true"/);
-  assert.match(styles, /--canvas-height/);
-  assert.match(styles, /width: 1600px; height: 900px/);
-  assert.match(styles, /aspect-ratio: 3 \/ 2/);
-  assert.match(styles, /\.detail-cord \{ position: absolute; z-index: 16/);
-  assert.doesNotMatch(source, /orientation-note/);
-  assert.doesNotMatch(source, /chibi-meeting/);
-  assert.doesNotMatch(source, /if \(open !== null\) return/);
+  assert.match(source, /台南晶英酒店/);
+  assert.doesNotMatch(source, /pull-nav/);
+  assert.doesNotMatch(source, /pull-handle/);
+  assert.doesNotMatch(source, /invitation-canvas/);
+  assert.doesNotMatch(source, /requestFullscreen/);
+
+  assert.match(styles, /scroll-snap-type: y mandatory/);
+  assert.match(styles, /scroll-snap-align: start/);
+  assert.match(styles, /family-paper-card/);
+  assert.match(styles, /dog-ribbon-opener/);
+  assert.match(styles, /@media \(max-width: 760px\)/);
 });
