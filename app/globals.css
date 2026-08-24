@@ -255,6 +255,130 @@ button { font: inherit; }
   .family-paper-card { height: 92%; }
 }
 
+/* v0.7.1 refinements */
+.detail-overlay {
+  inset: auto;
+  left: var(--visible-left, 0px);
+  top: var(--visible-top, 0px);
+  width: var(--visible-width, 100vw);
+  height: var(--visible-height, 100dvh);
+  container-type: size;
+}
+.detail-sheet { inset: clamp(6px, 1.4cqw, 22px); }
+
+/* Smaller transparent dog guide. The CSS ribbon grows while the dogs move. */
+.dog-ribbon-opener { width: clamp(170px, 15vw, 230px); height: 104px; transform: translate(-18%, -50%) translateX(var(--dog-pull-x)); overflow: visible; }
+.dog-ribbon-opener::before { content: ""; position: absolute; z-index: -1; right: 62%; top: 43px; width: calc(118px + var(--dog-pull-x)); height: 8px; border-top: 1px solid #d8ad62; border-bottom: 1px solid #d8ad62; background: linear-gradient(180deg, #a82d3e, #711825); box-shadow: 0 3px 8px rgba(27,5,9,.2); }
+.dog-illustration { left: auto; right: 0; width: 66%; height: 78px; }
+.dog-illustration img { object-position: right center; transform: scaleX(-1); filter: drop-shadow(0 7px 8px rgba(13,28,24,.18)); }
+.dog-guide-copy, .dog-pull-track { display: none; }
+.dog-arrow { position: absolute; right: -3px; bottom: 2px; color: #deb772; font: 300 25px Arial, sans-serif; animation: arrow-pulse 1.25s ease-in-out infinite; }
+@keyframes arrow-pulse { 50% { transform: translateX(8px); opacity: .55; } }
+
+/* First cover: restore the stacked photo and reveal three bilingual lines in sequence. */
+.about-photo-backdrop { position: absolute; inset: 8% 2% 0 12%; background: #d6c4ad; border: 1px solid rgba(219,190,140,.42); box-shadow: 0 18px 45px rgba(8,31,26,.2); transform: rotate(4.5deg); }
+.about-photo-layer { z-index: 2; }
+.about-preview-copy h1 { font-size: clamp(38px, 5vw, 72px); }
+.intro-lines { display: grid; gap: clamp(8px, 1.4vh, 14px); }
+.intro-lines p { display: flex; flex-direction: column; margin: 0; opacity: 0; transform: translateY(10px); animation: intro-line-in .72s ease-out forwards; }
+.intro-lines p:nth-child(1) { animation-delay: .38s; }.intro-lines p:nth-child(2) { animation-delay: .9s; }.intro-lines p:nth-child(3) { animation-delay: 1.42s; }
+.intro-lines span { font-size: clamp(13px, 1.2vw, 18px); line-height: 1.55; letter-spacing: .05em; }
+.intro-lines small { margin-top: 3px; color: rgba(255,248,237,.65); font: clamp(8px, .7vw, 10px)/1.4 Baskerville, Georgia, serif; }
+@keyframes intro-line-in { to { opacity: 1; transform: translateY(0); } }
+
+/* Second cover: title first, double-frame seal, and full uncropped family photograph. */
+.family-copy-new { display: flex; flex-direction: column; justify-content: center; }
+.family-copy-new h1 { order: 1; }
+.xi-stamp { order: 2; margin: clamp(22px, 3vh, 34px) 0 22px 10px; border: 4px double #b78b45; }
+.family-copy-new .bilingual-intro { order: 3; }.family-copy-new .families-date { order: 4; }
+.family-gradient-photo { display: grid; place-items: center; }
+.family-gradient-photo img { object-fit: contain; object-position: center; background: #76242e; }
+.family-gradient-photo::after { background: linear-gradient(90deg, #f4ead9 0, rgba(244,234,217,.08) 20%, transparent 40%), linear-gradient(0deg, rgba(75,10,19,.38), transparent 25%); }
+
+/* About detail heading remains on one line on desktop and landscape. */
+.about-heading-row h2 { white-space: nowrap; font-size: clamp(21px, 2.45cqw, 40px); letter-spacing: .035em; }
+
+/* Family detail: balanced seal, larger type, stronger venue spacing and safer photograph. */
+.families-detail-inner { grid-template-columns: 40% 60%; padding: 3.5% 5%; }
+.family-detail-photo { height: min(87cqh, 760px); max-height: calc(100cqh - 44px); margin-left: clamp(16px, 2cqw, 34px); }
+.family-invitation { padding: 0 4% 0 6%; }
+.xi-seal { width: clamp(72px, 7cqw, 106px); margin: 0 auto clamp(20px, 2.5cqh, 28px); }
+.family-invite-kicker { font-size: clamp(9px, .72cqw, 12px); }
+.family-invitation h2 { margin: 10px 0 12px; font-size: clamp(25px, 2.55cqw, 40px); }
+.family-invite-copy { font-size: clamp(10px, .82cqw, 13px); }
+.newlywed-names b { font-family: "DFKai-SB", "BiauKai", "KaiTi", "STKaiti", serif; font-size: clamp(20px, 1.9cqw, 29px); font-weight: 500; }
+.family-hosts dt { font-size: clamp(9px, .68cqw, 11px); }.family-hosts dd { font-size: clamp(11px, .78cqw, 14px); }
+.wedding-facts b { font-size: clamp(12px, .88cqw, 15px); }
+.family-venue { margin-top: clamp(17px, 2.2cqh, 25px); }
+.family-venue small { font-size: 8px; }.family-venue b { margin-top: 7px; font-size: clamp(15px, 1.15cqw, 18px); }
+.respectfully-invite { margin-top: 11px; font-size: 10px; }
+
+@media (max-width: 760px) {
+  .about-page-preview { grid-template-rows: 41% 59%; row-gap: 18px; }
+  .about-portrait { align-self: end; margin-bottom: 8px; }
+  .about-preview-copy { margin-top: 8px; padding-top: 22px; }
+  .about-preview-copy h1 { font-size: clamp(36px, 11vw, 50px); }
+  .intro-lines { gap: 6px; }
+  .intro-lines span { font-size: 11px; }.intro-lines small { font-size: 7px; }
+
+  .dog-ribbon-opener { top: 51%; bottom: auto; left: 0; width: 172px; height: 88px; transform: translate(-17%, -50%) translateX(var(--dog-pull-x)); }
+  .dog-ribbon-opener::before { right: 59%; top: 35px; width: calc(98px + var(--dog-pull-x)); height: 7px; }
+  .dog-illustration { width: 67%; height: 65px; }.dog-arrow { right: 0; bottom: 0; font-size: 21px; }
+
+  .family-copy-new { justify-content: flex-start; }
+  .family-copy-new h1 { font-size: clamp(34px, 10vw, 47px); }
+  .xi-stamp { position: absolute; order: initial; right: 25px; top: 19px; width: 50px; margin: 0; border-width: 3px; font-size: 29px; }
+  .family-gradient-photo img { width: 100%; height: 100%; object-fit: contain; }
+  .family-gradient-photo::after { background: linear-gradient(0deg, #f4ead9 0, rgba(244,234,217,.68) 12%, transparent 27%); }
+
+  /* Portrait about detail: photograph on top, compact bilingual story below. */
+  .detail-theme-1 .detail-sheet { overflow-y: auto; background: #030706; }
+  .about-detail-inner { height: auto; min-height: 100%; overflow: visible; display: flex; flex-direction: column; padding-bottom: 34px; }
+  .about-bands { position: relative; inset: auto; flex: 0 0 43cqh; width: 100%; overflow: hidden; background: #030504; }
+  .about-bands::after { content: ""; position: absolute; inset: 55% 0 0; background: linear-gradient(0deg, #030706 5%, transparent); }
+  .about-band { display: none; }
+  .about-band-0 { display: block; position: absolute; inset: 0; clip-path: none; width: 100%; height: 100%; object-fit: contain; opacity: 0; animation: mobile-photo-in .9s ease .2s forwards; }
+  .about-detail-inner::after { display: none; }
+  .about-row { position: relative; left: auto; top: auto; width: calc(100% - 38px); height: auto; min-height: 0; margin: 0 19px; padding: 13px 15px; background: transparent; opacity: 0; }
+  .about-heading-row { padding-top: 24px; padding-bottom: 18px; }
+  .about-heading-row > p { margin-bottom: 8px; font-size: 9px; }
+  .about-heading-row h2 { white-space: nowrap; font-size: clamp(16px, 4.35vw, 21px); letter-spacing: 0; }
+  .story-row { margin-top: 0; }
+  .story-row span { font-size: 12px; line-height: 1.45; }.story-row small { margin-top: 4px; font-size: 8px; line-height: 1.35; }
+  @keyframes mobile-photo-in { to { opacity: 1; } }
+
+  /* Family detail becomes exactly two snap pages: photo, then invitation. */
+  .detail-theme-2 .detail-sheet { overflow: hidden; }
+  .families-detail-inner { display: block; height: 100%; min-height: 0; padding: 0; overflow-x: hidden; overflow-y: auto; scroll-snap-type: y mandatory; }
+  .family-detail-photo { width: 100%; height: 100%; min-height: 100%; max-height: none; aspect-ratio: auto; display: grid; place-items: center; margin: 0; padding: 34px 18px 30px; border: 0; box-shadow: none; background: linear-gradient(145deg, #4c0910, #781a23); scroll-snap-align: start; scroll-snap-stop: always; }
+  .family-detail-photo img { width: 100%; height: 100%; object-fit: contain; }
+  .family-detail-photo figcaption { left: 22px; bottom: 17px; }
+  .family-invitation { min-height: 100%; display: flex; flex-direction: column; justify-content: flex-start; padding: 48px 25px 36px; scroll-snap-align: start; scroll-snap-stop: always; }
+  .xi-seal { flex: 0 0 auto; width: 74px; margin: 0 auto 27px; }
+  .family-invite-kicker { font-size: 10px; }.family-invitation h2 { font-size: 27px; margin: 10px 0 13px; }.family-invite-copy { font-size: 11px; line-height: 1.65; }
+  .newlywed-names { margin: 18px auto; }.newlywed-names b { font-size: 22px; }
+  .family-hosts dt { font-size: 10px; }.family-hosts dd { font-size: 13px; }
+  .wedding-facts b { font-size: 14px; }
+  .family-venue { margin-top: 23px; }.family-venue b { margin-top: 8px; font-size: 16px; }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .detail-sheet { inset: 4px; }
+  .dog-ribbon-opener { top: 52%; width: 165px; height: 84px; }
+  .dog-ribbon-opener::before { top: 34px; width: calc(90px + var(--dog-pull-x)); }
+  .dog-illustration { height: 63px; }
+  .about-heading-row h2 { font-size: clamp(18px, 2.35cqw, 30px); }
+  .families-detail-inner { grid-template-columns: 38% 62%; padding: 16px 32px; }
+  .family-detail-photo { height: min(86cqh, 500px); max-height: calc(100cqh - 24px); margin-left: 18px; }
+  .family-invitation { padding: 0 3% 0 5%; }
+  .xi-seal { width: 60px; margin-bottom: 14px; border-width: 2px; }.xi-seal span { font-size: 39px; }
+  .family-invite-kicker { font-size: 8px; }.family-invitation h2 { margin: 5px 0 7px; font-size: 24px; }.family-invite-copy { font-size: 9px; line-height: 1.4; }
+  .newlywed-names { margin: 8px auto; }.newlywed-names p { padding: 4px; }.newlywed-names b { font-size: 19px; }
+  .family-hosts > div { padding-bottom: 4px; }.family-hosts dt { font-size: 8px; }.family-hosts dd { font-size: 10px; }
+  .wedding-facts { margin-top: 7px; }.wedding-facts p { padding: 4px; }.wedding-facts b { font-size: 11px; }
+  .family-venue { margin-top: 11px; }.family-venue b { margin-top: 4px; font-size: 13px; }.respectfully-invite { margin-top: 5px; font-size: 8px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

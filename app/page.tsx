@@ -12,11 +12,11 @@ const chapters = [
 ] as const;
 
 const aboutStory = [
-  { zh: "我們的故事，沒有轟轟烈烈的開場。", en: "Our story did not begin with a grand gesture." },
-  { zh: "只是在一次次分享與陪伴裡，慢慢確認了彼此。", en: "It grew quietly through every conversation and every shared moment." },
-  { zh: "他讓平凡的日子有了期待；她讓未來變得清晰而溫柔。", en: "He gave ordinary days something to await; she made the future feel gentle and clear." },
-  { zh: "我們保留各自的模樣，也成為彼此最安心的地方。", en: "We remained ourselves, while becoming each other’s safest place." },
-  { zh: "從今天起，想把往後的每一段風景，一起看完。", en: "From this day forward, we choose to see every season, side by side." },
+  { zh: "從一次不經意的相遇開始，", en: "It began with an unexpected encounter." },
+  { zh: "我們在幾句問候裡慢慢熟悉彼此。", en: "A few simple greetings slowly brought us closer." },
+  { zh: "原以為只是人海中的短暫交會，", en: "What seemed like a passing moment in a sea of people," },
+  { zh: "後來才發現，那一次滑過，", en: "became the one gentle swipe that changed everything," },
+  { zh: "竟悄悄把彼此帶進了往後的生活。", en: "quietly leading us into a lifetime together." },
 ] as const;
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -35,6 +35,7 @@ export default function Home() {
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [visibleViewport, setVisibleViewport] = useState({ left: 0, top: 0, width: 0, height: 0 });
   const scrollRoot = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Array<HTMLElement | null>>([]);
 
@@ -42,6 +43,27 @@ export default function Home() {
     setCountdown(remainingTime());
     const timer = window.setInterval(() => setCountdown(remainingTime()), 1000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const syncViewport = () => setVisibleViewport({
+      left: viewport?.offsetLeft ?? 0,
+      top: viewport?.offsetTop ?? 0,
+      width: viewport?.width ?? window.innerWidth,
+      height: viewport?.height ?? window.innerHeight,
+    });
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+    window.addEventListener("orientationchange", syncViewport);
+    viewport?.addEventListener("resize", syncViewport);
+    viewport?.addEventListener("scroll", syncViewport);
+    return () => {
+      window.removeEventListener("resize", syncViewport);
+      window.removeEventListener("orientationchange", syncViewport);
+      viewport?.removeEventListener("resize", syncViewport);
+      viewport?.removeEventListener("scroll", syncViewport);
+    };
   }, []);
 
   useEffect(() => {
@@ -109,7 +131,18 @@ export default function Home() {
       </div>
 
       {open !== null && (
-        <section className={`detail-overlay detail-theme-${open + 1}`} role="dialog" aria-modal="true" aria-label={`${chapters[open].short}完整內容`}>
+        <section
+          className={`detail-overlay detail-theme-${open + 1}`}
+          style={{
+            "--visible-left": `${visibleViewport.left}px`,
+            "--visible-top": `${visibleViewport.top}px`,
+            "--visible-width": `${visibleViewport.width}px`,
+            "--visible-height": `${visibleViewport.height}px`,
+          } as React.CSSProperties}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${chapters[open].short}完整內容`}
+        >
           <button className="detail-close" onClick={() => setOpen(null)} aria-label="關閉展開內容">×</button>
           <div className="detail-sheet">
             {open === 0 && <AboutDetail />}
@@ -159,9 +192,8 @@ function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
       }}
       aria-label={`${label}，將狗狗與緞帶向右拉到底`}
     >
-      <span className="dog-illustration"><img src="dog-ribbon-guide.gif" alt="黃金獵犬與長毛臘腸拉著緞帶" /></span>
-      <span className="dog-guide-copy"><b>{label}</b><small>PULL THE RIBBON TO OPEN</small></span>
-      <i className="dog-pull-track" aria-hidden="true"><span /></i>
+      <span className="dog-illustration"><img src="dog-ribbon-guide.png" alt="黃金獵犬與長毛臘腸拉著緞帶" /></span>
+      <span className="dog-arrow" aria-hidden="true">→</span>
     </button>
   );
 }
@@ -170,13 +202,17 @@ function AboutPreview() {
   return (
     <article className="page-preview about-page-preview">
       <div className="about-portrait">
+        <div className="about-photo-backdrop" aria-hidden="true" />
         <div className="about-photo-layer"><img src="about-us.jpg" alt="冠禎與玟慧在中式建築前的婚紗照" /></div>
       </div>
       <div className="about-preview-copy vertical-copy-card">
-        <p className="chapter-kicker"><span>第一章</span><small>CHAPTER ONE</small></p>
         <h1><span>關於我們</span><small>ABOUT US</small></h1>
         <div className="gold-rule" aria-hidden="true" />
-        <p className="bilingual-intro"><span>兩個不同步調的人，在相遇後，慢慢學會把日常走成同一個方向。</span><small>Two people with different rhythms, learning to walk toward the same tomorrow.</small></p>
+        <div className="intro-lines">
+          <p><span>兩個不同步調的人，</span><small>Two people with different rhythms,</small></p>
+          <p><span>在相遇後慢慢靠近，</span><small>slowly drew closer after meeting,</small></p>
+          <p><span>將日常走成同一個方向。</span><small>and began walking toward the same tomorrow.</small></p>
+        </div>
       </div>
     </article>
   );
@@ -187,9 +223,8 @@ function FamiliesPreview() {
     <article className="page-preview families-page-preview">
       <div className="family-paper-card">
         <div className="family-copy-new">
-          <p className="chapter-kicker"><span>第二章</span><small>CHAPTER TWO</small></p>
-          <span className="xi-stamp" aria-hidden="true">囍</span>
           <h1><span>兩家之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
+          <span className="xi-stamp" aria-hidden="true">囍</span>
           <p className="bilingual-intro"><span>兩姓締盟，良緣永結；承兩家之愛，赴一世之約。</span><small>Two families become one, and our forever begins.</small></p>
           <div className="families-date"><span>2026</span><b>12 · 12</b><small>TAINAN · SILKS PLACE</small></div>
         </div>
@@ -206,7 +241,6 @@ function VenuePreview() {
   return (
     <article className="page-preview venue-page-preview">
       <div className="venue-copy vertical-copy-card">
-        <p className="chapter-kicker"><span>第三章</span><small>CHAPTER THREE</small></p>
         <h1><span>相聚・台南</span><small>THE WEDDING VENUE</small></h1>
         <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
         <p className="venue-address">700 台南市中西區和意路 1 號<br /><small>No. 1, Heyi Rd., West Central Dist., Tainan City</small></p>
@@ -221,7 +255,6 @@ function RsvpPreview() {
   return (
     <article className="page-preview rsvp-page-preview">
       <div className="generic-copy vertical-copy-card">
-        <p className="chapter-kicker"><span>第四章</span><small>CHAPTER FOUR</small></p>
         <h1><span>把你的名字，</span><span>寫進這一天的回憶裡</span><small>BE OUR GUEST</small></h1>
         <div className="gold-rule" />
         <p className="bilingual-intro"><span>期待在婚禮那天與你相見。</span><small>We cannot wait to celebrate this day with you.</small></p>
@@ -238,8 +271,8 @@ function AboutDetail() {
         {[0, 1, 2, 3, 4, 5].map((index) => <img key={index} className={`about-band about-band-${index}`} src="about-detail.jpg" alt="" />)}
       </div>
       <div className="about-row about-heading-row">
-        <p><span>關於我們</span><small>ABOUT US</small></p>
-        <h2>兩個人的故事，從此有了同一個方向。</h2>
+        <p><span>OUR STORY</span></p>
+        <h2>從指尖的滑過　到餘生的相握</h2>
       </div>
       {aboutStory.map((line, index) => (
         <p className={`about-row story-row story-row-${index + 1}`} style={{ "--row-index": index + 1 } as React.CSSProperties} key={line.zh}>
