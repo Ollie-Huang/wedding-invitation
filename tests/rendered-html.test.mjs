@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.1 invitation corrects the family seal and splits the mobile arrival guide", async () => {
+test("v0.8.2 invitation centers the family portrait and restores the diagonal arrival guide", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
   assert.match(source, /scroll-pages/);
   assert.match(source, /story-page story-page-1/);
-  assert.match(source, /story-page story-page-4/);
+  assert.doesNotMatch(source, /story-page story-page-4/);
   assert.match(source, /IntersectionObserver/);
   assert.match(source, /scrollIntoView/);
   assert.match(source, /DogRibbon/);
@@ -35,7 +35,9 @@ test("v0.8.1 invitation corrects the family seal and splits the mobile arrival g
   assert.match(source, /B5－B7/);
   assert.match(source, /className="xi-stamp" aria-hidden="true" \/>/);
   assert.match(source, /className="venue-logo-mark"/);
+  assert.match(source, /className="venue-hotel-row"/);
   assert.doesNotMatch(source, /venue-logo-card/);
+  assert.doesNotMatch(source, /short: "出席回覆"/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
   assert.doesNotMatch(source, />第二章</);
@@ -59,6 +61,8 @@ test("v0.8.1 invitation corrects the family seal and splits the mobile arrival g
   assert.match(styles, /transport-slide-in/);
   assert.match(styles, /mix-blend-mode: multiply/);
   assert.match(styles, /\.venue-map-panel,\s*\.transport-panel/);
+  assert.match(styles, /repeating-linear-gradient\(128deg/);
+  assert.match(styles, /\.transport-panel h2 \{ align-items: flex-end/);
   assert.match(styles, /scaleX\(-1\)/);
   assert.match(styles, /scroll-snap-type: y mandatory/);
   assert.match(styles, /@media \(max-width: 760px\)/);

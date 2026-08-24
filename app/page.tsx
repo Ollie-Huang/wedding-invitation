@@ -8,7 +8,6 @@ const chapters = [
   { number: "01", short: "關於我們", eyebrow: "ABOUT US" },
   { number: "02", short: "兩家之喜", eyebrow: "TWO FAMILIES" },
   { number: "03", short: "婚宴地點", eyebrow: "THE VENUE" },
-  { number: "04", short: "出席回覆", eyebrow: "BE OUR GUEST" },
 ] as const;
 
 const aboutStory = [
@@ -145,7 +144,6 @@ export default function Home() {
         <section className="story-page story-page-1" data-page="0" ref={(node) => { pageRefs.current[0] = node; }}><AboutPreview /><DogRibbon label="拉開・關於我們" onOpen={() => setOpen(0)} /></section>
         <section className="story-page story-page-2" data-page="1" ref={(node) => { pageRefs.current[1] = node; }}><FamiliesPreview /><DogRibbon label="拉開・兩家之囍" onOpen={() => setOpen(1)} /></section>
         <section className="story-page story-page-3" data-page="2" ref={(node) => { pageRefs.current[2] = node; }}><VenuePreview onOpen={() => setOpen(2)} /></section>
-        <section className="story-page story-page-4" data-page="3" ref={(node) => { pageRefs.current[3] = node; }}><RsvpPreview /><DogRibbon label="拉開・出席回覆" onOpen={() => setOpen(3)} /></section>
       </div>
 
       {open !== null && (
@@ -166,7 +164,6 @@ export default function Home() {
             {open === 0 && <AboutDetail />}
             {open === 1 && <FamiliesDetail />}
             {open === 2 && <VenueDetail />}
-            {open === 3 && <RsvpDetail />}
           </div>
           {open === 2 && <div className="venue-opening" aria-hidden="true"><span /><i /><b /></div>}
         </section>
@@ -279,27 +276,18 @@ function VenuePreview({ onOpen }: { onOpen: () => void }) {
       <div className="venue-copy vertical-copy-card">
         <p className="venue-eyebrow">THE WEDDING VENUE</p>
         <h1><span>相聚・台南</span><small>MEET US IN TAINAN</small></h1>
-        <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
-        <p className="venue-address">700 台南市中西區和意路 1 號<br /><small>No. 1, Heyi Rd., West Central Dist., Tainan City</small></p>
-        <img className="venue-logo-mark" src="silks-place-logo.png" alt="台南晶英酒店 Silks Place Tainan" />
+        <div className="venue-hotel-row">
+          <div>
+            <p className="venue-name">台南晶英酒店<small>SILKS PLACE TAINAN</small></p>
+            <p className="venue-address">700 台南市中西區和意路 1 號<br /><small>No. 1, Heyi Rd., West Central Dist., Tainan City</small></p>
+          </div>
+          <img className="venue-logo-mark" src="silks-place-logo.png" alt="台南晶英酒店 Silks Place Tainan" />
+        </div>
       </div>
       <div className="venue-preview-visual">
         <figure className="venue-route-photo"><img src="silks-driving-route.png" alt="台南晶英酒店開車路線與停車入口示意圖" /></figure>
         <button type="button" className="venue-detail-trigger" onClick={onOpen}>點擊查看詳細交通資訊 <span>→</span></button>
       </div>
-    </article>
-  );
-}
-
-function RsvpPreview() {
-  return (
-    <article className="page-preview rsvp-page-preview">
-      <div className="generic-copy vertical-copy-card">
-        <h1><span>把你的名字，</span><span>寫進這一天的回憶裡</span><small>BE OUR GUEST</small></h1>
-        <div className="gold-rule" />
-        <p className="bilingual-intro"><span>期待在婚禮那天與你相見。</span><small>We cannot wait to celebrate this day with you.</small></p>
-      </div>
-      <div className="rsvp-seal" aria-hidden="true"><b>囍</b><small>RSVP</small></div>
     </article>
   );
 }
@@ -402,17 +390,6 @@ function MapCard({ compact = false }: { compact?: boolean }) {
     <div className={`map-card ${compact ? "is-compact" : ""}`}>
       <iframe title="台南晶英酒店 Google 地圖預覽" loading="lazy" referrerPolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97&output=embed" />
       <div className="map-caption"><span>台南晶英酒店</span><small>SILKS PLACE TAINAN</small></div>
-    </div>
-  );
-}
-
-function RsvpDetail() {
-  return (
-    <div className="rsvp-detail-inner">
-      <p className="chapter-kicker"><span>出席回覆</span><small>BE OUR GUEST</small></p>
-      <h2>期待與你相見</h2>
-      <p>這裡將串接正式的出席回覆表單，收集出席人數、飲食需求與同行賓客資訊。</p>
-      <button type="button">出席表單・即將開放 <span>→</span></button>
     </div>
   );
 }
