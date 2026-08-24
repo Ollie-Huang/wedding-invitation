@@ -372,6 +372,129 @@ button { font: inherit; }
   .invitation-canvas[data-fitted="true"] { inset: auto; top: var(--canvas-top); left: var(--canvas-left); transform: translate(-50%, -50%) scale(var(--canvas-scale)); }
 }
 
+/* v0.6.1 — a wider touch layout uses the spaces previously left at both sides. */
+.invitation-canvas[data-fitted="true"] { height: var(--canvas-height, 900px); }
+.invitation-canvas[data-wide="true"] .stage { inset: 54px 22px 18px 106px; }
+.invitation-canvas[data-wide="true"] .masthead { top: 11px; left: 106px; }
+.invitation-canvas[data-wide="true"] .countdown { top: 12px; right: 24px; }
+.invitation-canvas[data-wide="true"] .pull-nav { top: 15%; bottom: 5%; width: 172px; }
+.invitation-canvas[data-wide="true"] .pull-handle { min-height: 48px; }
+.invitation-canvas[data-wide="true"] .stage-footer { bottom: 2%; }
+.invitation-canvas[data-wide="true"] .detail-close { top: 20px; right: 24px; }
+
+/* Chapter 2 redesign — pine green and warm ivory balance the red and antique gold. */
+.theme-2 {
+  --ink: #243e3a;
+  --deep: #173d39;
+  --gold: #caa45d;
+  background:
+    radial-gradient(circle at 84% 15%, rgba(202,164,93,.16), transparent 24%),
+    radial-gradient(circle at 14% 85%, rgba(130,31,39,.23), transparent 30%),
+    repeating-linear-gradient(42deg, rgba(255,239,205,.025) 0 1px, transparent 1px 19px),
+    linear-gradient(135deg, #102f2d, #31544e 54%, #472027);
+}
+.theme-2 .masthead { color: #fff1d4; }
+.theme-2 .countdown { color: #f2d89e; background: transparent; border: 0; box-shadow: none; }
+.theme-2 .countdown p, .theme-2 .countdown small { color: rgba(255,239,207,.65); }
+.theme-2 .pull-handle { color: #fff2d8; background: linear-gradient(90deg, #183c38, #315a53); border-color: rgba(204,166,94,.36); box-shadow: 0 8px 20px rgba(7,28,25,.25); }
+.theme-2 .pull-handle:hover, .theme-2 .pull-handle:focus-visible, .theme-2 .pull-handle.is-active { color: #fff3d5; background: linear-gradient(90deg, #7f2028, #a53b3e); }
+.theme-2 .stage { background: #eee4d3; box-shadow: 0 28px 64px rgba(7,30,27,.42); }
+.theme-2 .stage-footer p, .theme-2 .pagination { color: rgba(240,216,171,.7); }
+
+.slide-2 {
+  grid-template-columns: 61% 39%;
+  gap: 0;
+  padding: 5.5% 5% 7% 8%;
+  color: #263f3b;
+  background: linear-gradient(90deg, #173d39 0 64%, #efe5d3 64% 100%);
+}
+.slide-2::before {
+  background:
+    radial-gradient(circle at 26% 22%, rgba(226,193,125,.13), transparent 26%),
+    repeating-linear-gradient(135deg, rgba(255,235,195,.026) 0 1px, transparent 1px 17px);
+}
+.family-cover-photo {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  width: min(54cqw, 108cqh, 850px);
+  margin: 0;
+  padding: 5px;
+  background: #d7b46c;
+  border: 1px solid rgba(245,220,167,.9);
+  box-shadow: 12px 14px 0 rgba(79,19,24,.42), 0 24px 46px rgba(3,24,21,.35);
+  transform: rotate(-.7deg);
+}
+.family-cover-photo::before { inset: -7px; border-color: rgba(214,177,103,.45); }
+.family-cover-photo::after { inset: 5px; border-color: rgba(49,74,67,.45); }
+.family-cover-photo img { background: #14312f; }
+.family-cover-photo figcaption { right: 9px; bottom: -20px; color: rgba(255,233,191,.68); }
+.families-copy {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  min-width: 0;
+  margin-left: -5%;
+  padding: clamp(26px, 5cqh, 48px) clamp(28px, 3.2cqw, 48px);
+  color: #233d39;
+  background: rgba(247,239,223,.98);
+  border-left: 6px solid #8d252d;
+  border-top: 1px solid rgba(196,154,77,.78);
+  border-bottom: 1px solid rgba(196,154,77,.44);
+  box-shadow: -16px 20px 38px rgba(7,30,27,.2);
+}
+.slide-2 .chapter-kicker { color: #9a2730; }
+.families-heading { display: block; margin-top: clamp(17px, 2.5cqh, 26px); }
+.families-heading .double-happiness {
+  width: clamp(54px, 5cqw, 76px);
+  margin: 0 0 clamp(17px, 2.8cqh, 26px) 9px;
+  border-width: 2px;
+  border-color: rgba(190,148,68,.86);
+}
+.families-heading .double-happiness::after { color: #9b2630; text-shadow: none; }
+.families-heading h1 { color: #233e3a; font-size: clamp(32px, 3.8cqw, 58px); text-shadow: none; }
+.families-heading h1 small { color: #a57e3f; }
+.slide-2 .bilingual-intro { margin-top: clamp(16px, 2.4cqh, 25px); color: #7d2630; font-size: clamp(12px, 1.05cqw, 16px); }
+.slide-2 .bilingual-intro small { color: rgba(35,62,58,.62); }
+.families-date { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 3px 13px; margin-top: clamp(18px, 3.5cqh, 34px); padding-top: 13px; border-top: 1px solid rgba(173,132,62,.38); }
+.families-date span { color: #9b2730; font: 400 clamp(10px, .85cqw, 13px) Georgia, serif; letter-spacing: .18em; }
+.families-date b { color: #2b4843; font: 400 clamp(18px, 1.8cqw, 27px) Georgia, serif; letter-spacing: .12em; }
+.families-date small { grid-column: 1 / -1; color: #9b7a43; font: 7px Arial, sans-serif; letter-spacing: .22em; }
+
+/* Expanded invitation: larger portrait, much thinner matte and controlled second text line. */
+.families-detail-inner { grid-template-columns: 37% 63%; padding: 3.5% 4.5% 3.5% 5%; }
+.family-detail-photo {
+  width: auto;
+  height: min(84cqh, 750px);
+  aspect-ratio: 2 / 3;
+  padding: 4px;
+  background: #d3ad61;
+  border: 1px solid rgba(244,216,156,.82);
+  box-shadow: 9px 11px 0 rgba(38,0,4,.24), 0 20px 42px rgba(33,0,4,.28);
+}
+.family-detail-photo figcaption { left: 7px; bottom: -18px; }
+.family-invitation { padding: 0 3% 0 4%; }
+.family-invite-copy { max-width: 48em; }
+
+.invitation-canvas[data-wide="true"] .families-detail-inner { grid-template-columns: 32% 68%; padding: 2.5% 4% 2.5% 5%; }
+.invitation-canvas[data-wide="true"] .family-detail-photo { height: 84cqh; }
+.invitation-canvas[data-wide="true"] .family-invitation { padding: 0 5% 0 2%; }
+.invitation-canvas[data-wide="true"] .xi-seal { width: 68px; margin-bottom: 5px; border-width: 2px; }
+.invitation-canvas[data-wide="true"] .xi-seal span { font-size: 46px; }
+.invitation-canvas[data-wide="true"] .family-invitation h2 { margin: 5px 0; font-size: 28px; }
+.invitation-canvas[data-wide="true"] .family-invite-copy { font-size: 9px; line-height: 1.45; }
+.invitation-canvas[data-wide="true"] .newlywed-names { margin: 8px auto; }
+.invitation-canvas[data-wide="true"] .newlywed-names p { padding: 4px 8px 5px; }
+.invitation-canvas[data-wide="true"] .newlywed-names b { font-size: 18px; }
+.invitation-canvas[data-wide="true"] .family-hosts > div { padding-bottom: 5px; }
+.invitation-canvas[data-wide="true"] .wedding-facts { margin-top: 8px; }
+.invitation-canvas[data-wide="true"] .wedding-facts p { padding: 5px; }
+.invitation-canvas[data-wide="true"] .family-venue { margin-top: 6px; }
+.invitation-canvas[data-wide="true"] .respectfully-invite { margin-top: 5px; }
+
+/* Fullscreen controls are intentionally retired; the wide layout no longer needs them. */
+.mobile-fullscreen-toggle, .fullscreen-help { display: none !important; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.6 invitation adds a full chapter theme and visible-viewport fitting", async () => {
+test("v0.6.1 invitation adds a wide touch layout and redesigned family chapter", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -16,18 +16,20 @@ test("v0.6 invitation adds a full chapter theme and visible-viewport fitting", a
   assert.match(source, /2026-12-12T18:00:00\+08:00/);
   assert.match(source, /legacy-photo-composition/);
   assert.match(source, /viewing-tip/);
-  assert.match(source, /requestFullscreen/);
-  assert.match(source, /mobile-fullscreen-toggle/);
+  assert.doesNotMatch(source, /requestFullscreen/);
+  assert.doesNotMatch(source, /mobile-fullscreen-toggle/);
   assert.match(source, /visualViewport/);
   assert.match(source, /canvasFit/);
   assert.match(source, /families-cover\.jpg/);
   assert.match(source, /families-detail\.jpg/);
-  assert.match(source, /chibi-umbrella\.png/);
+  assert.doesNotMatch(source, /chibi-umbrella\.png/);
   assert.match(source, /黃春安、謝秀鳳/);
   assert.match(source, /李文獎、黃意芬/);
   assert.match(source, /大成廳/);
   assert.match(styles, /\.theme-2/);
   assert.match(styles, /invitation-canvas\[data-fitted="true"\]/);
+  assert.match(styles, /data-wide="true"/);
+  assert.match(styles, /--canvas-height/);
   assert.match(styles, /width: 1600px; height: 900px/);
   assert.match(styles, /aspect-ratio: 3 \/ 2/);
   assert.match(styles, /\.detail-cord \{ position: absolute; z-index: 16/);

@@ -37,9 +37,7 @@ export default function Home() {
   const [pull, setPull] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
   const [viewingTipOpen, setViewingTipOpen] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [fullscreenHelp, setFullscreenHelp] = useState(false);
-  const [canvasFit, setCanvasFit] = useState({ fitted: false, scale: 1, left: 0, top: 0 });
+  const [canvasFit, setCanvasFit] = useState({ fitted: false, wide: false, scale: 1, height: 900, left: 0, top: 0 });
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const dragStart = useRef(0);
 
@@ -50,27 +48,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const syncFullscreen = () => setIsFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener("fullscreenchange", syncFullscreen);
-    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
-  }, []);
-
-  useEffect(() => {
     const viewport = window.visualViewport;
     const syncCanvasScale = () => {
       const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
       const isPortraitDevice = window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
       if (!isTouchDevice && !isPortraitDevice) {
-        setCanvasFit({ fitted: false, scale: 1, left: 0, top: 0 });
+        setCanvasFit({ fitted: false, wide: false, scale: 1, height: 900, left: 0, top: 0 });
         return;
       }
 
       const visibleWidth = viewport?.width ?? window.innerWidth;
       const visibleHeight = viewport?.height ?? window.innerHeight;
       const safeMargin = 12;
+      const isLandscape = visibleWidth > visibleHeight;
+      const designHeight = isTouchDevice && isLandscape
+        ? clamp(1600 * (visibleHeight - safeMargin * 2) / (visibleWidth - safeMargin * 2), 560, 900)
+        : 900;
       setCanvasFit({
         fitted: true,
-        scale: Math.max(0.1, Math.min((visibleWidth - safeMargin * 2) / 1600, (visibleHeight - safeMargin * 2) / 900)),
+        wide: designHeight < 820,
+        scale: Math.max(0.1, Math.min((visibleWidth - safeMargin * 2) / 1600, (visibleHeight - safeMargin * 2) / designHeight)),
+        height: Math.round(designHeight),
         left: (viewport?.offsetLeft ?? 0) + visibleWidth / 2,
         top: (viewport?.offsetTop ?? 0) + visibleHeight / 2,
       });
@@ -136,21 +134,6 @@ export default function Home() {
     setPull(0);
   };
 
-  const toggleFullscreen = async () => {
-    setFullscreenHelp(false);
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      } else if (document.documentElement.requestFullscreen) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        setFullscreenHelp(true);
-      }
-    } catch {
-      setFullscreenHelp(true);
-    }
-  };
-
   return (
     <main className={`invitation-shell theme-${active + 1}`}>
       <div className="paper-grain" aria-hidden="true" />
@@ -158,8 +141,10 @@ export default function Home() {
       <div
         className="invitation-canvas"
         data-fitted={canvasFit.fitted}
+        data-wide={canvasFit.wide}
         style={{
           "--canvas-scale": canvasFit.scale,
+          "--canvas-height": `${canvasFit.height}px`,
           "--canvas-left": `${canvasFit.left}px`,
           "--canvas-top": `${canvasFit.top}px`,
         } as React.CSSProperties}
@@ -253,19 +238,14 @@ export default function Home() {
           <div className="rotate-device" aria-hidden="true"><i /><span>↻</span></div>
           <p className="chapter-kicker"><span>最佳觀賞方式</span><small>BEST VIEWING EXPERIENCE</small></p>
           <h2>建議將手機轉為橫向</h2>
-          <p>橫向觀看能完整呈現照片、拉條與展開動畫；你仍然可以選擇直向瀏覽。</p>
+          <p>橫向觀看時，喜帖會依照瀏覽器目前可見範圍自動延展排版；你仍然可以選擇直向瀏覽。</p>
           <div className="viewing-tip-actions">
-            <button onClick={async () => { await toggleFullscreen(); setViewingTipOpen(false); }}>橫向・全螢幕觀看</button>
+            <button onClick={() => setViewingTipOpen(false)}>開始瀏覽喜帖</button>
             <button className="tip-secondary" onClick={() => setViewingTipOpen(false)}>繼續直向瀏覽</button>
           </div>
-          <small>iPhone／iPad 若仍顯示網址列，可從分享選單選擇「加入主畫面」，再由主畫面開啟。</small>
+          <small>不需要加入主畫面，也不需要使用全螢幕；網址列出現時會自動保留安全空間。</small>
         </div>
       </aside>
-
-      <button className="mobile-fullscreen-toggle" onClick={toggleFullscreen} aria-label={isFullscreen ? "離開全螢幕" : "進入全螢幕"}>
-        <span aria-hidden="true">{isFullscreen ? "↙" : "⛶"}</span>{isFullscreen ? "離開全螢幕" : "全螢幕觀看"}
-      </button>
-      {fullscreenHelp && <p className="fullscreen-help" role="status">此瀏覽器不支援網頁全螢幕，請從分享選單選擇「加入主畫面」。</p>}
     </main>
   );
 }
@@ -292,6 +272,10 @@ function AboutPreview() {
 function FamiliesPreview() {
   return (
     <article className="slide slide-2">
+      <figure className="family-cover-photo">
+        <img src="families-cover.jpg" alt="冠禎、玟慧與兩隻狗狗的婚紗照" />
+        <figcaption>OUR FAMILY PORTRAIT · 2026</figcaption>
+      </figure>
       <div className="families-copy">
         <p className="chapter-kicker"><span>第二章</span><small>CHAPTER TWO</small></p>
         <div className="families-heading">
@@ -299,13 +283,8 @@ function FamiliesPreview() {
           <h1><span>兩家之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
         </div>
         <p className="bilingual-intro"><span>承兩家之愛，結一世之好。</span><small>With the love of two families, we begin our forever.</small></p>
-        <div className="umbrella-couple">
-          <img src="chibi-umbrella.png" alt="紅傘下的新郎冠禎與新娘玟慧 Q 版插畫" />
-          <div className="couple-name couple-name-groom"><small>新郎</small><b>黃冠禎</b></div>
-          <div className="couple-name couple-name-bride"><small>新娘</small><b>李玟慧</b></div>
-        </div>
+        <div className="families-date"><span>2026</span><b>12 · 12</b><small>TAINAN · SILKS PLACE</small></div>
       </div>
-      <figure className="family-cover-photo"><img src="families-cover.jpg" alt="冠禎、玟慧與兩隻狗狗的婚紗照" /><figcaption>OUR FAMILY PORTRAIT · 2026</figcaption></figure>
     </article>
   );
 }
@@ -369,7 +348,7 @@ function FamiliesDetail() {
         <div className="xi-seal" aria-hidden="true"><span>囍</span></div>
         <p className="family-invite-kicker">兩姓締盟 · 良緣永結</p>
         <h2>敬邀您蒞臨我們的婚宴</h2>
-        <p className="family-invite-copy">承蒙親友一路相伴，我們懷著喜悅與感恩，誠摯邀請您一同見證兩家相聚、兩心相許的重要時刻。</p>
+        <p className="family-invite-copy">承蒙親友一路相伴，我們懷著喜悅與感恩，<br />誠摯邀請您一同見證兩家相聚、兩心相許的重要時刻。</p>
         <div className="newlywed-names">
           <p><small>新郎 · GROOM</small><b>黃冠禎</b></p>
           <i>&amp;</i>
