@@ -34,15 +34,33 @@ function remainingTime() {
 export default function Home() {
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
+  const [landscapeTipOpen, setLandscapeTipOpen] = useState(false);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [visibleViewport, setVisibleViewport] = useState({ left: 0, top: 0, width: 0, height: 0 });
   const scrollRoot = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<Array<HTMLElement | null>>([]);
+  const landscapeTipDismissed = useRef(false);
 
   useEffect(() => {
     setCountdown(remainingTime());
     const timer = window.setInterval(() => setCountdown(remainingTime()), 1000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const syncOrientationTip = () => {
+      const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+      const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+      if (!isLandscape) {
+        landscapeTipDismissed.current = false;
+        setLandscapeTipOpen(false);
+        return;
+      }
+      if (isTouch && !landscapeTipDismissed.current) setLandscapeTipOpen(true);
+    };
+    syncOrientationTip();
+    window.addEventListener("orientationchange", syncOrientationTip);
+    return () => window.removeEventListener("orientationchange", syncOrientationTip);
   }, []);
 
   useEffect(() => {
@@ -152,6 +170,14 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {landscapeTipOpen && (
+        <aside className="portrait-view-tip" role="dialog" aria-label="直向觀賞提醒">
+          <div className="portrait-device" aria-hidden="true"><i /><span>↻</span></div>
+          <p><small>BEST VIEWING EXPERIENCE</small><b>建議轉回直向觀賞</b><span>直向瀏覽能呈現最完整的照片、文字與展開內容。</span></p>
+          <button onClick={() => { landscapeTipDismissed.current = true; setLandscapeTipOpen(false); }}>仍要橫向觀看</button>
+        </aside>
+      )}
     </main>
   );
 }
@@ -171,7 +197,12 @@ function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
   return (
     <button
       className="dog-ribbon-opener"
-      style={{ "--dog-pull-x": `${pull * 120}px`, "--dog-progress": `${pull * 100}%` } as React.CSSProperties}
+      style={{
+        "--dog-pull-x": `${pull * 120}px`,
+        "--dog-progress": `${pull * 100}%`,
+        "--ribbon-opacity": Math.min(pull * 4, 1),
+        "--hint-opacity": pull < .05 ? 1 : 0,
+      } as React.CSSProperties}
       onPointerDown={(event) => {
         event.currentTarget.setPointerCapture(event.pointerId);
         dragging.current = true;
@@ -184,6 +215,7 @@ function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
       }}
       onPointerUp={finish}
       onPointerCancel={finish}
+      onDragStart={(event) => event.preventDefault()}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
@@ -192,8 +224,9 @@ function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
       }}
       aria-label={`${label}，將狗狗與緞帶向右拉到底`}
     >
-      <span className="dog-illustration"><img src="dog-ribbon-guide.png" alt="黃金獵犬與長毛臘腸拉著緞帶" /></span>
+      <span className="dog-illustration"><img src="dog-ribbon-guide.png" alt="黃金獵犬與長毛臘腸拉著緞帶" draggable={false} /></span>
       <span className="dog-arrow" aria-hidden="true">→</span>
+      <span className="dog-hint" aria-hidden="true"><b>按住雙犬或緞帶</b><small>向右滑動</small></span>
     </button>
   );
 }
@@ -223,8 +256,10 @@ function FamiliesPreview() {
     <article className="page-preview families-page-preview">
       <div className="family-paper-card">
         <div className="family-copy-new">
-          <h1><span>兩家之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
-          <span className="xi-stamp" aria-hidden="true">囍</span>
+          <div className="family-title-row">
+            <h1><span>兩家</span><span>之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
+            <span className="xi-stamp" aria-hidden="true">囍</span>
+          </div>
           <p className="bilingual-intro"><span>兩姓締盟，良緣永結；承兩家之愛，赴一世之約。</span><small>Two families become one, and our forever begins.</small></p>
           <div className="families-date"><span>2026</span><b>12 · 12</b><small>TAINAN · SILKS PLACE</small></div>
         </div>
@@ -309,7 +344,7 @@ function FamiliesDetail() {
           <p><small>迎賓 WELCOME</small><b>17:30</b></p>
           <p><small>開席 BANQUET</small><b>18:00</b></p>
         </div>
-        <p className="family-venue"><small>地點 · VENUE</small><b>台南晶英酒店 — 大成廳</b></p>
+        <p className="family-venue"><small>地點 · VENUE</small><b>台南晶英酒店・大成廳</b></p>
         <p className="respectfully-invite">黃府 · 李府　敬邀</p>
       </div>
     </div>

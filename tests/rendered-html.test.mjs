@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.7.1 invitation refines transparent ribbon and mobile detail layouts", async () => {
+test("v0.7.2 invitation refines ribbon interaction and family-page framing", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -23,6 +23,9 @@ test("v0.7.1 invitation refines transparent ribbon and mobile detail layouts", a
   assert.match(source, /從指尖的滑過　到餘生的相握/);
   assert.match(source, /從一次不經意的相遇開始/);
   assert.match(source, /visualViewport/);
+  assert.match(source, /landscapeTipOpen/);
+  assert.match(source, /按住雙犬或緞帶/);
+  assert.match(source, /台南晶英酒店・大成廳/);
   assert.doesNotMatch(source, />第一章</);
   assert.doesNotMatch(source, />第二章</);
   assert.doesNotMatch(source, /PULL THE RIBBON TO OPEN/);
@@ -36,6 +39,9 @@ test("v0.7.1 invitation refines transparent ribbon and mobile detail layouts", a
   assert.match(styles, /family-paper-card/);
   assert.match(styles, /dog-ribbon-opener/);
   assert.match(styles, /dog-ribbon-opener::before/);
+  assert.match(styles, /--ribbon-opacity/);
+  assert.match(styles, /portrait-view-tip/);
+  assert.match(styles, /family-title-row/);
   assert.match(styles, /scaleX\(-1\)/);
   assert.match(styles, /scroll-snap-type: y mandatory/);
   assert.match(styles, /@media \(max-width: 760px\)/);
