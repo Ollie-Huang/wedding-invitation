@@ -39,7 +39,7 @@ export default function Home() {
   const [viewingTipOpen, setViewingTipOpen] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenHelp, setFullscreenHelp] = useState(false);
-  const [portraitScale, setPortraitScale] = useState(0.2);
+  const [canvasFit, setCanvasFit] = useState({ fitted: false, scale: 1, left: 0, top: 0 });
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const dragStart = useRef(0);
 
@@ -56,20 +56,35 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const viewport = window.visualViewport;
     const syncCanvasScale = () => {
+      const isTouchDevice = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
       const isPortraitDevice = window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
-      if (!isPortraitDevice) {
-        setPortraitScale(1);
+      if (!isTouchDevice && !isPortraitDevice) {
+        setCanvasFit({ fitted: false, scale: 1, left: 0, top: 0 });
         return;
       }
-      setPortraitScale(Math.min((window.innerWidth - 16) / 1600, (window.innerHeight - 16) / 900));
+
+      const visibleWidth = viewport?.width ?? window.innerWidth;
+      const visibleHeight = viewport?.height ?? window.innerHeight;
+      const safeMargin = 12;
+      setCanvasFit({
+        fitted: true,
+        scale: Math.max(0.1, Math.min((visibleWidth - safeMargin * 2) / 1600, (visibleHeight - safeMargin * 2) / 900)),
+        left: (viewport?.offsetLeft ?? 0) + visibleWidth / 2,
+        top: (viewport?.offsetTop ?? 0) + visibleHeight / 2,
+      });
     };
     syncCanvasScale();
     window.addEventListener("resize", syncCanvasScale);
     window.addEventListener("orientationchange", syncCanvasScale);
+    viewport?.addEventListener("resize", syncCanvasScale);
+    viewport?.addEventListener("scroll", syncCanvasScale);
     return () => {
       window.removeEventListener("resize", syncCanvasScale);
       window.removeEventListener("orientationchange", syncCanvasScale);
+      viewport?.removeEventListener("resize", syncCanvasScale);
+      viewport?.removeEventListener("scroll", syncCanvasScale);
     };
   }, []);
 
@@ -137,10 +152,18 @@ export default function Home() {
   };
 
   return (
-    <main className="invitation-shell">
+    <main className={`invitation-shell theme-${active + 1}`}>
       <div className="paper-grain" aria-hidden="true" />
 
-      <div className="invitation-canvas" style={{ "--portrait-scale": portraitScale } as React.CSSProperties}>
+      <div
+        className="invitation-canvas"
+        data-fitted={canvasFit.fitted}
+        style={{
+          "--canvas-scale": canvasFit.scale,
+          "--canvas-left": `${canvasFit.left}px`,
+          "--canvas-top": `${canvasFit.top}px`,
+        } as React.CSSProperties}
+      >
 
       <header className="masthead" aria-label="新人姓名">
         <span className="name-ornament" aria-hidden="true">✦</span>
@@ -271,15 +294,18 @@ function FamiliesPreview() {
     <article className="slide slide-2">
       <div className="families-copy">
         <p className="chapter-kicker"><span>第二章</span><small>CHAPTER TWO</small></p>
-        <h1><span>兩姓之好</span><small>TWO FAMILIES, ONE CELEBRATION</small></h1>
-        <p className="bilingual-intro"><span>兩個家庭的祝福，成為我們走向彼此最溫柔的光。</span><small>With the love of two families, we begin a new chapter together.</small></p>
-        <div className="family-mini-cards">
-          <div><small>THE GROOM</small><b>新郎・冠禎</b><span>男方家人姓名待補</span></div>
-          <i aria-hidden="true">囍</i>
-          <div><small>THE BRIDE</small><b>新娘・玟慧</b><span>女方家人姓名待補</span></div>
+        <div className="families-heading">
+          <span className="double-happiness" aria-hidden="true">囍</span>
+          <h1><span>兩家之囍</span><small>TWO FAMILIES, ONE JOY</small></h1>
+        </div>
+        <p className="bilingual-intro"><span>承兩家之愛，結一世之好。</span><small>With the love of two families, we begin our forever.</small></p>
+        <div className="umbrella-couple">
+          <img src="chibi-umbrella.png" alt="紅傘下的新郎冠禎與新娘玟慧 Q 版插畫" />
+          <div className="couple-name couple-name-groom"><small>新郎</small><b>黃冠禎</b></div>
+          <div className="couple-name couple-name-bride"><small>新娘</small><b>李玟慧</b></div>
         </div>
       </div>
-      <div className="preview-photo-card family-photo"><img src="about-us.jpg" alt="冠禎與玟慧的婚紗照" /></div>
+      <figure className="family-cover-photo"><img src="families-cover.jpg" alt="冠禎、玟慧與兩隻狗狗的婚紗照" /><figcaption>OUR FAMILY PORTRAIT · 2026</figcaption></figure>
     </article>
   );
 }
@@ -335,14 +361,32 @@ function AboutDetail() {
 function FamiliesDetail() {
   return (
     <div className="families-detail-inner">
-      <img src="about-us.jpg" alt="" aria-hidden="true" />
-      <div className="family-detail-title"><p>兩姓之好・兩家之喜</p><small>TWO FAMILIES, ONE CELEBRATION</small></div>
-      <div className="family-detail-grid">
-        <article><small>THE GROOM&apos;S FAMILY</small><h2>新郎・冠禎</h2><p>承載著家人的愛與祝福，帶著真心，走向人生嶄新的篇章。</p><span>男方家長｜姓名待補</span></article>
-        <b aria-hidden="true">囍</b>
-        <article><small>THE BRIDE&apos;S FAMILY</small><h2>新娘・玟慧</h2><p>在家人的陪伴中長成溫柔堅定的模樣，與所愛的人並肩前行。</p><span>女方家長｜姓名待補</span></article>
+      <figure className="family-detail-photo">
+        <img src="families-detail.jpg" alt="冠禎與玟慧手持氣球的婚紗照" />
+        <figcaption>THE BEGINNING OF OUR FOREVER</figcaption>
+      </figure>
+      <div className="family-invitation">
+        <div className="xi-seal" aria-hidden="true"><span>囍</span></div>
+        <p className="family-invite-kicker">兩姓締盟 · 良緣永結</p>
+        <h2>敬邀您蒞臨我們的婚宴</h2>
+        <p className="family-invite-copy">承蒙親友一路相伴，我們懷著喜悅與感恩，誠摯邀請您一同見證兩家相聚、兩心相許的重要時刻。</p>
+        <div className="newlywed-names">
+          <p><small>新郎 · GROOM</small><b>黃冠禎</b></p>
+          <i>&amp;</i>
+          <p><small>新娘 · BRIDE</small><b>李玟慧</b></p>
+        </div>
+        <dl className="family-hosts">
+          <div><dt>男方主婚人</dt><dd>黃春安、謝秀鳳</dd></div>
+          <div><dt>女方主婚人</dt><dd>李文獎、黃意芬</dd></div>
+        </dl>
+        <div className="wedding-facts">
+          <p><small>日期 DATE</small><b>2026.12.12</b></p>
+          <p><small>迎賓 WELCOME</small><b>17:30</b></p>
+          <p><small>開席 BANQUET</small><b>18:00</b></p>
+        </div>
+        <p className="family-venue"><small>地點 · VENUE</small><b>台南晶英酒店 — 大成廳</b></p>
+        <p className="respectfully-invite">黃府 · 李府　敬邀</p>
       </div>
-      <p className="family-note">家長姓名與稱謂保留為可編輯欄位，待確認後替換。</p>
     </div>
   );
 }
