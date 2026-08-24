@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.2 invitation centers the family portrait and restores the diagonal arrival guide", async () => {
+test("v0.8.3 invitation adds the hotel portrait, triangular guide and mobile scroll cues", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -27,8 +27,8 @@ test("v0.8.2 invitation centers the family portrait and restores the diagonal ar
   assert.match(source, /按住雙犬或緞帶/);
   assert.match(source, /台南晶英酒店・大成廳/);
   assert.match(source, /silks-place-logo\.png/);
-  assert.match(source, /silks-driving-route\.png/);
   assert.match(source, /silks-traffic-guide\.png/);
+  assert.match(source, /silks-hotel-exterior\.png/);
   assert.match(source, /點擊查看詳細交通資訊/);
   assert.match(source, /selectedTransport/);
   assert.match(source, /高鐵快捷公車/);
@@ -38,6 +38,10 @@ test("v0.8.2 invitation centers the family portrait and restores the diagonal ar
   assert.match(source, /className="venue-hotel-row"/);
   assert.doesNotMatch(source, /venue-logo-card/);
   assert.doesNotMatch(source, /short: "出席回覆"/);
+  assert.match(source, /viewport\.scale > 1\.01/);
+  assert.match(source, /COUNTDOWN <span>TO WEDDING/);
+  assert.match(source, /mobile-scroll-cue/);
+  assert.match(source, /transport-icon-/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
   assert.doesNotMatch(source, />第二章</);
@@ -61,8 +65,10 @@ test("v0.8.2 invitation centers the family portrait and restores the diagonal ar
   assert.match(styles, /transport-slide-in/);
   assert.match(styles, /mix-blend-mode: multiply/);
   assert.match(styles, /\.venue-map-panel,\s*\.transport-panel/);
-  assert.match(styles, /repeating-linear-gradient\(128deg/);
-  assert.match(styles, /\.transport-panel h2 \{ align-items: flex-end/);
+  assert.match(styles, /clip-path: polygon\(0 0, 100% 0, 78% 100%, 0 100%\)/);
+  assert.match(styles, /transport-icon-rail/);
+  assert.match(styles, /scroll-cue-bob/);
+  assert.match(styles, /text-size-adjust: 100%/);
   assert.match(styles, /scaleX\(-1\)/);
   assert.match(styles, /scroll-snap-type: y mandatory/);
   assert.match(styles, /@media \(max-width: 760px\)/);

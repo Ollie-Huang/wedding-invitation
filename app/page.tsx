@@ -64,12 +64,15 @@ export default function Home() {
 
   useEffect(() => {
     const viewport = window.visualViewport;
-    const syncViewport = () => setVisibleViewport({
-      left: viewport?.offsetLeft ?? 0,
-      top: viewport?.offsetTop ?? 0,
-      width: viewport?.width ?? window.innerWidth,
-      height: viewport?.height ?? window.innerHeight,
-    });
+    const syncViewport = () => {
+      if (viewport && viewport.scale > 1.01) return;
+      setVisibleViewport({
+        left: viewport?.offsetLeft ?? 0,
+        top: viewport?.offsetTop ?? 0,
+        width: viewport?.width ?? window.innerWidth,
+        height: viewport?.height ?? window.innerHeight,
+      });
+    };
     syncViewport();
     window.addEventListener("resize", syncViewport);
     window.addEventListener("orientationchange", syncViewport);
@@ -123,7 +126,7 @@ export default function Home() {
       </header>
 
       <aside className="vertical-countdown" aria-label="距離婚宴開始倒數">
-        <p>COUNTDOWN <span>TO 18:00</span></p>
+        <p>COUNTDOWN <span>TO WEDDING</span></p>
         <div>
           <b>{countdown.days}</b><small>DAYS</small><i>:</i>
           <b>{String(countdown.hours).padStart(2, "0")}</b><small>HRS</small><i>:</i>
@@ -285,7 +288,7 @@ function VenuePreview({ onOpen }: { onOpen: () => void }) {
         </div>
       </div>
       <div className="venue-preview-visual">
-        <figure className="venue-route-photo"><img src="silks-driving-route.png" alt="台南晶英酒店開車路線與停車入口示意圖" /></figure>
+        <figure className="venue-route-photo"><img src="silks-hotel-exterior.png" alt="夜色中的台南晶英酒店外觀" /></figure>
         <button type="button" className="venue-detail-trigger" onClick={onOpen}>點擊查看詳細交通資訊 <span>→</span></button>
       </div>
     </article>
@@ -317,6 +320,7 @@ function FamiliesDetail() {
       <figure className="family-detail-photo">
         <img src="families-detail.jpg" alt="冠禎與玟慧手持氣球的婚紗照" />
         <figcaption>THE BEGINNING OF OUR FOREVER</figcaption>
+        <div className="mobile-scroll-cue" aria-hidden="true"><span>向下滑動</span><i>⌄</i><small>查看喜帖內容</small></div>
       </figure>
       <div className="family-invitation">
         <div className="xi-seal" aria-hidden="true"><span>囍</span></div>
@@ -346,10 +350,10 @@ function FamiliesDetail() {
 
 function VenueDetail() {
   const transportOptions = [
-    { id: "rail", icon: "高", label: "高鐵", title: "高鐵快捷公車", text: "高鐵至台南站後，由 2 號出口前往快捷公車站，搭乘「高鐵台南站－台南市政府」路線，於小西門站下車，再沿和意路步行約 50 公尺抵達。" },
-    { id: "drive", icon: "車", label: "開車", title: "自行開車", text: "由中山高速公路下仁德交流道，往台南市區方向行駛，經中山路、東門路、府前路，左轉永福路後右轉和意路，即可抵達台南晶英酒店。" },
-    { id: "bus", icon: "巴", label: "公車", title: "市區公車", text: "可搭乘 1、2、5、11、18、紅2、綠17、藍24或紅幹線，於「新光三越新天地站」下車，步行約 3 分鐘即可抵達。" },
-    { id: "parking", icon: "P", label: "停車", title: "飯店地下停車場", text: "飯店專屬停車場位於 B5－B7，可由永福路或和意路入口進入。館內用餐消費至多折抵 4 小時；離場前請至 B5－B7 梯廳繳費機輸入車牌確認折抵。" },
+    { id: "rail", label: "高鐵", title: "高鐵快捷公車", text: "高鐵至台南站後，由 2 號出口前往快捷公車站，搭乘「高鐵台南站－台南市政府」路線，於小西門站下車，再沿和意路步行約 50 公尺抵達。" },
+    { id: "drive", label: "開車", title: "自行開車", text: "由中山高速公路下仁德交流道，往台南市區方向行駛，經中山路、東門路、府前路，左轉永福路後右轉和意路，即可抵達台南晶英酒店。" },
+    { id: "bus", label: "公車", title: "市區公車", text: "可搭乘 1、2、5、11、18、紅2、綠17、藍24或紅幹線，於「新光三越新天地站」下車，步行約 3 分鐘即可抵達。" },
+    { id: "parking", label: "停車", title: "飯店地下停車場", text: "飯店專屬停車場位於 B5－B7，可由永福路或和意路入口進入。館內用餐消費至多折抵 4 小時；離場前請至 B5－B7 梯廳繳費機輸入車牌確認折抵。" },
   ] as const;
   const [selectedTransport, setSelectedTransport] = useState<(typeof transportOptions)[number]["id"]>("rail");
   const selected = transportOptions.find((option) => option.id === selectedTransport) ?? transportOptions[0];
@@ -364,6 +368,7 @@ function VenueDetail() {
           <a href="https://www.silksplace-tainan.com.tw/" target="_blank" rel="noreferrer">www.silksplace-tainan.com.tw ↗</a>
           <a className="map-link" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟 Google 地圖 <span>↗</span></a>
         </div>
+        <div className="mobile-scroll-cue venue-scroll-cue" aria-hidden="true"><span>向下滑動</span><i>⌄</i><small>查看交通方式</small></div>
       </section>
       <section className="transport-panel">
         <p className="transport-kicker">ARRIVAL GUIDE</p>
@@ -371,7 +376,7 @@ function VenueDetail() {
         <div className="transport-tabs" role="tablist" aria-label="交通方式">
           {transportOptions.map((option) => (
             <button key={option.id} type="button" role="tab" aria-selected={selectedTransport === option.id} className={selectedTransport === option.id ? "is-active" : ""} onClick={() => setSelectedTransport(option.id)}>
-              <i aria-hidden="true">{option.icon}</i><span>{option.label}</span>
+              <i className={`transport-icon transport-icon-${option.id}`} aria-hidden="true"><span /></i><span>{option.label}</span>
             </button>
           ))}
         </div>

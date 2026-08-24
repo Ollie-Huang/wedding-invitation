@@ -912,3 +912,152 @@ button { font: inherit; }
   .transport-panel { text-align: right; }
   .transport-panel h2 { align-items: flex-end; }
 }
+
+/* v0.8.3 — hotel portrait, original triangular split, pictogram tabs and mobile cues. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+.vertical-countdown { transform-origin: right top; }
+.vertical-countdown > p { display: block; margin-bottom: 7px; font-size: 8px; letter-spacing: .2em; }
+.vertical-countdown > p span { opacity: .82; }
+.vertical-countdown > div { gap: 5px; }
+.vertical-countdown b { font-size: clamp(14px, 1.25vw, 18px); }
+.vertical-countdown small { font-size: 5.5px; }
+
+@media (min-width: 761px) {
+  .about-preview-copy h1,
+  .family-title-row h1,
+  .venue-copy h1 { font-size: clamp(40px, 4.4vw, 66px); }
+}
+
+.venue-route-photo {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  aspect-ratio: auto;
+  background: #172734;
+}
+.venue-route-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.venue-detail-inner {
+  grid-template-columns: minmax(0, 55%) minmax(0, 45%);
+  background: #294b5a;
+}
+.venue-map-panel {
+  position: relative;
+  z-index: 2;
+  align-items: flex-start;
+  padding-right: clamp(82px, 10vw, 158px);
+  background: #f2f2ee;
+  clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
+}
+.venue-map-crop { width: 88%; }
+.venue-contact-card { width: 84%; }
+.transport-panel {
+  z-index: 1;
+  padding-left: clamp(28px, 4vw, 64px);
+  background: transparent;
+}
+.transport-panel::before { display: none; }
+.transport-kicker,
+.transport-panel > h2 { width: 100%; text-align: right; }
+.transport-tabs,
+.transport-slide { text-align: left; }
+.transport-slide {
+  border-right: 0;
+  border-left: 2px solid #d5b570;
+  background: rgba(7,24,32,.48);
+}
+
+.transport-icon { position: relative; display: grid; place-items: center; }
+.transport-icon > span { position: relative; display: block; color: currentColor; font-size: 0; letter-spacing: 0; }
+.transport-icon-rail > span { width: 15px; height: 21px; border: 1.5px solid currentColor; border-radius: 6px 6px 2px 2px; }
+.transport-icon-rail > span::before { content: ""; position: absolute; left: 3px; top: 4px; width: 3px; height: 5px; border: 1px solid currentColor; box-shadow: 5px 0 0 -1px currentColor; }
+.transport-icon-rail > span::after { content: ""; position: absolute; left: -3px; bottom: -5px; width: 19px; height: 1px; border-top: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: skewX(-28deg); }
+.transport-icon-drive > span { width: 22px; height: 10px; border: 1.5px solid currentColor; border-radius: 4px 5px 3px 3px; }
+.transport-icon-drive > span::before { content: ""; position: absolute; left: 4px; top: -7px; width: 12px; height: 7px; border: 1.5px solid currentColor; border-bottom: 0; border-radius: 7px 7px 0 0; }
+.transport-icon-drive > span::after { content: ""; position: absolute; left: 2px; bottom: -5px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: 13px 0 currentColor; }
+.transport-icon-bus > span { width: 18px; height: 23px; border: 1.5px solid currentColor; border-radius: 4px; }
+.transport-icon-bus > span::before { content: ""; position: absolute; left: 3px; top: 4px; width: 10px; height: 7px; border: 1px solid currentColor; box-shadow: 0 10px 0 -3px currentColor; }
+.transport-icon-bus > span::after { content: ""; position: absolute; left: 2px; bottom: -4px; width: 3px; height: 3px; border-radius: 50%; background: currentColor; box-shadow: 11px 0 currentColor; }
+.transport-icon-parking > span { width: 3px; height: 23px; background: currentColor; }
+.transport-icon-parking > span::before { content: ""; position: absolute; left: 0; top: 1px; width: 17px; height: 3px; background: currentColor; transform-origin: left; transform: rotate(-18deg); }
+.transport-icon-parking > span::after { content: ""; position: absolute; left: 12px; top: -2px; width: 6px; height: 8px; border: 1px solid currentColor; border-radius: 2px; }
+.transport-tabs button > span { font-size: 10px; letter-spacing: .1em; }
+
+.mobile-scroll-cue { display: none; }
+
+@media (max-width: 760px) {
+  .vertical-countdown { right: 10px; transform: scale(.9); }
+  .vertical-countdown > p { display: block; margin-bottom: 4px; font-size: 5.5px; letter-spacing: .13em; }
+  .vertical-countdown > div { gap: 3px; }
+  .vertical-countdown b { font-size: 13px; }
+  .vertical-countdown small { font-size: 4.5px; }
+
+  .about-preview-copy h1,
+  .family-title-row h1,
+  .venue-copy h1 { font-size: clamp(29px, 8.3vw, 39px); }
+
+  .family-gradient-photo::after {
+    inset: 0;
+    background: linear-gradient(0deg, #f4ead9 0%, rgba(244,234,217,.82) 13%, rgba(244,234,217,.2) 31%, transparent 47%);
+  }
+
+  .venue-route-photo { width: 100%; height: 100%; aspect-ratio: auto; }
+  .venue-route-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+
+  .venue-detail-inner { display: block; background: none; }
+  .venue-map-panel {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    align-items: stretch;
+    padding: 54px 20px 38px;
+    clip-path: none;
+    background: #f2f2ee;
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+  .venue-map-crop,
+  .venue-contact-card { width: 100%; }
+  .transport-panel {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    padding: 54px 22px 42px;
+    background: #294b5a;
+  }
+  .transport-panel > h2 { text-align: right; }
+  .transport-tabs,
+  .transport-slide { text-align: left; }
+
+  .mobile-scroll-cue {
+    position: absolute;
+    z-index: 20;
+    left: 50%;
+    bottom: 12px;
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: 7px;
+    min-width: 128px;
+    padding: 7px 12px;
+    color: #fff4dc;
+    background: rgba(51,13,18,.78);
+    border: 1px solid rgba(225,190,122,.62);
+    transform: translateX(-50%);
+    text-align: left;
+    backdrop-filter: blur(5px);
+    pointer-events: none;
+  }
+  .mobile-scroll-cue span { font-size: 8px; letter-spacing: .12em; }
+  .mobile-scroll-cue small { grid-column: 1; color: #dfc184; font: 6px Arial; letter-spacing: .08em; }
+  .mobile-scroll-cue i { grid-column: 2; grid-row: 1 / 3; font: 19px Arial; animation: scroll-cue-bob 1.35s ease-in-out infinite; }
+  .venue-scroll-cue { color: #203b48; background: rgba(247,244,237,.93); border-color: rgba(53,82,91,.36); }
+  .venue-scroll-cue small { color: #8d6c42; }
+}
+
+@keyframes scroll-cue-bob { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(4px); } }
