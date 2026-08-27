@@ -118,7 +118,7 @@ export default function Home() {
   return (
     <main className={`vertical-invitation active-page-${active + 1}`}>
       <header className="vertical-masthead" aria-label="新人姓名">
-        <span className="name-ornament" aria-hidden="true">✦</span>
+        <span className="name-ornament" aria-hidden="true" />
         <div className="name-lockup">
           <p>冠禎 <i>&amp;</i> 玟慧</p>
           <small>OUR WEDDING DAY</small>
@@ -144,7 +144,7 @@ export default function Home() {
       </nav>
 
       <div className="scroll-pages" ref={scrollRoot}>
-        <section className="story-page story-page-1" data-page="0" ref={(node) => { pageRefs.current[0] = node; }}><AboutPreview /><DogRibbon label="拉開・關於我們" onOpen={() => setOpen(0)} /></section>
+        <section className="story-page story-page-1" data-page="0" ref={(node) => { pageRefs.current[0] = node; }}><AboutPreview isActive={active === 0} /><DogRibbon label="拉開・關於我們" onOpen={() => setOpen(0)} /></section>
         <section className="story-page story-page-2" data-page="1" ref={(node) => { pageRefs.current[1] = node; }}><FamiliesPreview /><DogRibbon label="拉開・兩家之囍" onOpen={() => setOpen(1)} /></section>
         <section className="story-page story-page-3" data-page="2" ref={(node) => { pageRefs.current[2] = node; }}><VenuePreview onOpen={() => setOpen(2)} /></section>
       </div>
@@ -185,19 +185,40 @@ export default function Home() {
 
 function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
   const [pull, setPull] = useState(0);
+  const [autoOpening, setAutoOpening] = useState(false);
   const dragging = useRef(false);
   const startX = useRef(0);
+  const skipClick = useRef(false);
+  const openTimer = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (openTimer.current !== null) window.clearTimeout(openTimer.current);
+  }, []);
+
+  const openAutomatically = () => {
+    if (autoOpening) return;
+    setAutoOpening(true);
+    setPull(1);
+    openTimer.current = window.setTimeout(() => {
+      onOpen();
+      setPull(0);
+      setAutoOpening(false);
+    }, 620);
+  };
 
   const finish = () => {
     if (!dragging.current) return;
     dragging.current = false;
-    if (pull >= 0.68) onOpen();
+    if (pull >= 0.68) {
+      skipClick.current = true;
+      onOpen();
+    }
     setPull(0);
   };
 
   return (
     <button
-      className="dog-ribbon-opener"
+      className={`dog-ribbon-opener ${autoOpening ? "is-auto-opening" : ""}`}
       style={{
         "--dog-pull-x": `${pull * 120}px`,
         "--dog-progress": `${pull * 100}%`,
@@ -207,34 +228,36 @@ function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
       onPointerDown={(event) => {
         event.currentTarget.setPointerCapture(event.pointerId);
         dragging.current = true;
+        skipClick.current = false;
         startX.current = event.clientX;
         setPull(0);
       }}
       onPointerMove={(event) => {
         if (!dragging.current) return;
+        if (Math.abs(event.clientX - startX.current) > 5) skipClick.current = true;
         setPull(clamp((event.clientX - startX.current) / 170, 0, 1));
       }}
       onPointerUp={finish}
       onPointerCancel={finish}
-      onDragStart={(event) => event.preventDefault()}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onOpen();
+      onClick={() => {
+        if (skipClick.current) {
+          skipClick.current = false;
+          return;
         }
+        openAutomatically();
       }}
-      aria-label={`${label}，將狗狗與緞帶向右拉到底`}
+      onDragStart={(event) => event.preventDefault()}
+      aria-label={`${label}，向右拖拉或點擊雙犬即可展開`}
     >
       <span className="dog-illustration"><img src="dog-ribbon-guide.png" alt="黃金獵犬與長毛臘腸拉著緞帶" draggable={false} /></span>
-      <span className="dog-arrow" aria-hidden="true">→</span>
-      <span className="dog-hint" aria-hidden="true"><b>按住雙犬或緞帶</b><small>向右滑動</small></span>
+      <span className="dog-arrow" aria-hidden="true">››››››</span>
     </button>
   );
 }
 
-function AboutPreview() {
+function AboutPreview({ isActive }: { isActive: boolean }) {
   return (
-    <article className="page-preview about-page-preview">
+    <article className={`page-preview about-page-preview ${isActive ? "is-active" : ""}`}>
       <div className="about-portrait">
         <div className="about-photo-backdrop" aria-hidden="true" />
         <div className="about-photo-layer"><img src="about-us.jpg" alt="冠禎與玟慧在中式建築前的婚紗照" /></div>
@@ -315,12 +338,21 @@ function AboutDetail() {
 }
 
 function FamiliesDetail() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 760px)").matches) return;
+    const timer = window.setTimeout(() => {
+      scrollRef.current?.scrollTo({ top: scrollRef.current.clientHeight, behavior: "smooth" });
+    }, 2000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="families-detail-inner">
+    <div className="families-detail-inner" ref={scrollRef}>
       <figure className="family-detail-photo">
         <img src="families-detail.jpg" alt="冠禎與玟慧手持氣球的婚紗照" />
         <figcaption>THE BEGINNING OF OUR FOREVER</figcaption>
-        <div className="mobile-scroll-cue" aria-hidden="true"><span>向下滑動</span><i>⌄</i><small>查看喜帖內容</small></div>
       </figure>
       <div className="family-invitation">
         <div className="xi-seal" aria-hidden="true"><span>囍</span></div>
@@ -357,9 +389,18 @@ function VenueDetail() {
   ] as const;
   const [selectedTransport, setSelectedTransport] = useState<(typeof transportOptions)[number]["id"]>("rail");
   const selected = transportOptions.find((option) => option.id === selectedTransport) ?? transportOptions[0];
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 760px)").matches) return;
+    const timer = window.setTimeout(() => {
+      scrollRef.current?.scrollTo({ top: scrollRef.current.clientHeight, behavior: "smooth" });
+    }, 2000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="venue-detail-inner">
+    <div className="venue-detail-inner" ref={scrollRef}>
       <section className="venue-map-panel">
         <div className="venue-map-crop"><img src="silks-traffic-guide.png" alt="台南晶英酒店周邊交通地圖" /></div>
         <div className="venue-contact-card">
@@ -368,17 +409,21 @@ function VenueDetail() {
           <a href="https://www.silksplace-tainan.com.tw/" target="_blank" rel="noreferrer">www.silksplace-tainan.com.tw ↗</a>
           <a className="map-link" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟 Google 地圖 <span>↗</span></a>
         </div>
-        <div className="mobile-scroll-cue venue-scroll-cue" aria-hidden="true"><span>向下滑動</span><i>⌄</i><small>查看交通方式</small></div>
       </section>
       <section className="transport-panel">
         <p className="transport-kicker">ARRIVAL GUIDE</p>
         <h2>前往晶英<small>選擇交通方式，查看對應路線資訊</small></h2>
-        <div className="transport-tabs" role="tablist" aria-label="交通方式">
-          {transportOptions.map((option) => (
+        <div className="transport-choice-row">
+          <div className="transport-tabs" role="tablist" aria-label="前往交通方式">
+          {transportOptions.filter((option) => option.id !== "parking").map((option) => (
             <button key={option.id} type="button" role="tab" aria-selected={selectedTransport === option.id} className={selectedTransport === option.id ? "is-active" : ""} onClick={() => setSelectedTransport(option.id)}>
-              <i className={`transport-icon transport-icon-${option.id}`} aria-hidden="true"><span /></i><span>{option.label}</span>
+              <i className="transport-icon" aria-hidden="true"><img src={`transport-${option.id}.png`} alt="" /></i><span>{option.label}</span>
             </button>
           ))}
+          </div>
+          <button type="button" role="tab" aria-selected={selectedTransport === "parking"} className={`parking-option ${selectedTransport === "parking" ? "is-active" : ""}`} onClick={() => setSelectedTransport("parking")}>
+            <i className="transport-icon" aria-hidden="true"><img src="transport-parking.png" alt="" /></i><span>停車</span>
+          </button>
         </div>
         <div className="transport-slide" key={selected.id} role="tabpanel">
           <small>{selected.label.toUpperCase()} INFORMATION</small>

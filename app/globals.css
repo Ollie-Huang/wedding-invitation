@@ -1061,3 +1061,237 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 }
 
 @keyframes scroll-cue-bob { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(4px); } }
+
+/* v0.8.4 — readable mobile type, replayable copy, click-to-open dogs and image transport tabs. */
+.name-ornament {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  transform: none;
+  background:
+    radial-gradient(circle, currentColor 0 2px, transparent 2.5px),
+    conic-gradient(from 45deg, transparent 0 10%, currentColor 10% 12%, transparent 12% 23%, currentColor 23% 25%, transparent 25% 35%, currentColor 35% 37%, transparent 37% 48%, currentColor 48% 50%, transparent 50% 60%, currentColor 60% 62%, transparent 62% 73%, currentColor 73% 75%, transparent 75% 85%, currentColor 85% 87%, transparent 87%);
+  opacity: .9;
+}
+.name-ornament::before {
+  inset: 5px;
+  width: auto;
+  height: auto;
+  border: 1px solid currentColor;
+  border-radius: 50% 50% 12% 50%;
+  background: transparent;
+  opacity: .65;
+  transform: rotate(45deg);
+}
+.name-ornament::after {
+  inset: 10px;
+  width: auto;
+  height: auto;
+  border: 1px solid currentColor;
+  background: transparent;
+  opacity: .75;
+  transform: rotate(45deg);
+}
+
+/* Restart the three-line reveal whenever the first page becomes active again. */
+.intro-lines p { animation: none; }
+.about-page-preview.is-active .intro-lines p { animation: intro-line-in .72s ease-out forwards; }
+.about-page-preview.is-active .intro-lines p:nth-child(1) { animation-delay: .25s; }
+.about-page-preview.is-active .intro-lines p:nth-child(2) { animation-delay: .78s; }
+.about-page-preview.is-active .intro-lines p:nth-child(3) { animation-delay: 1.31s; }
+
+/* Dog guide: larger animated pair, illuminated chevrons, and automatic click travel. */
+.dog-ribbon-opener { width: clamp(166px, 13.5vw, 205px); height: 90px; }
+.dog-illustration { width: 70%; height: 70px; }
+.dog-illustration img { animation: dog-guide-breathe 1.15s ease-in-out infinite; }
+.dog-arrow {
+  right: -62px;
+  bottom: 15px;
+  width: 88px;
+  overflow: hidden;
+  color: transparent;
+  font: 700 23px/1 Arial, sans-serif;
+  letter-spacing: -3px;
+  white-space: nowrap;
+  background: linear-gradient(90deg, rgba(255,255,255,.18), #fff 42%, rgba(255,255,255,.22) 72%);
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,.82));
+  animation: chevron-chase 1.1s linear infinite;
+}
+.dog-ribbon-opener.is-auto-opening { transition: transform .6s cubic-bezier(.18,.72,.22,1); }
+@keyframes dog-guide-breathe { 0%, 100% { transform: scaleX(-1) translateY(0); } 50% { transform: scaleX(-1) translateY(-3px); } }
+@keyframes chevron-chase { from { background-position: 130% 0; } to { background-position: -80% 0; } }
+
+/* First detail page: two typographic steps larger. */
+.about-heading-row > p { font-size: clamp(11px, .9cqw, 15px); }
+.about-heading-row h2 { font-size: clamp(25px, 2.75cqw, 44px); }
+.story-row span { font-size: clamp(15px, 1.2cqw, 20px); }
+.story-row small { font-size: clamp(10px, .82cqw, 13px); }
+
+/* Family detail: larger desktop copy, with labels receiving two steps. */
+@media (min-width: 761px) {
+  .family-invite-kicker { font-size: clamp(10px, .82cqw, 14px); }
+  .family-invitation h2 { font-size: clamp(27px, 2.7cqw, 42px); }
+  .family-invite-copy { font-size: clamp(11px, .92cqw, 15px); }
+  .newlywed-names small,
+  .family-hosts dt,
+  .wedding-facts small,
+  .family-venue small { font-size: clamp(10px, .78cqw, 13px); }
+  .newlywed-names b { font-size: clamp(22px, 2.05cqw, 31px); }
+  .family-hosts dd { font-size: clamp(12px, .9cqw, 16px); }
+  .wedding-facts b { font-size: clamp(13px, 1cqw, 17px); }
+  .family-venue b { font-size: clamp(16px, 1.28cqw, 20px); }
+  .respectfully-invite { font-size: 11px; }
+
+  .venue-name { font-size: clamp(19px, 2vw, 28px); white-space: nowrap; }
+  .venue-contact-card span { font-size: 10px; }
+  .venue-contact-card b { font-size: clamp(13px, 1.15vw, 17px); }
+  .venue-contact-card small,
+  .venue-contact-card a { font-size: 10px; }
+  .transport-kicker { font-size: 9px; }
+  .transport-panel h2 small { font-size: 10px; }
+  .transport-tabs button > span,
+  .parking-option > span { font-size: 11px; }
+  .transport-slide small { font-size: 8px; }
+  .transport-slide h3 { font-size: clamp(21px, 2.15vw, 31px); }
+  .transport-slide p { font-size: clamp(12px, 1.12vw, 16px); }
+}
+
+/* Image-based travel choices; parking is visually separated from travel modes. */
+.transport-choice-row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(62px, 1fr); gap: clamp(18px, 2vw, 28px); align-items: stretch; }
+.transport-tabs { grid-template-columns: repeat(3, 1fr); }
+.parking-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 0 0 12px clamp(14px, 1.4vw, 22px);
+  border: 0;
+  border-left: 1px solid rgba(226,198,142,.42);
+  border-bottom: 1px solid rgba(222,198,151,.3);
+  color: #b9c9ce;
+  background: transparent;
+  cursor: pointer;
+  transition: color .25s ease, border-color .25s ease, transform .25s ease;
+}
+.parking-option::before { content: "停車資訊"; position: absolute; top: -18px; color: rgba(223,202,162,.7); font: 6px Arial; letter-spacing: .16em; }
+.parking-option:hover,
+.parking-option:focus-visible,
+.parking-option.is-active { color: #f2d69e; border-bottom-color: #e5c787; transform: translateY(-3px); }
+.transport-icon {
+  display: grid;
+  place-items: center;
+  width: clamp(42px, 4.5vw, 58px) !important;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid currentColor;
+  border-color: rgba(239,215,169,.75) !important;
+  border-radius: 50%;
+  background: #f5efe4;
+}
+.transport-icon img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.venue-detail-trigger {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.venue-detail-trigger::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 18%, rgba(255,255,255,.34) 42%, transparent 64%);
+  transform: translateX(-130%);
+  animation: venue-trigger-shine 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.venue-detail-trigger span { position: relative; z-index: 1; }
+@keyframes venue-trigger-shine { 55%, 100% { transform: translateX(140%); } }
+
+@media (max-width: 760px) {
+  .vertical-masthead { gap: 8px; }
+  .name-ornament { width: 28px; height: 28px; }
+  .name-lockup p { font-size: 15px; }
+  .name-lockup small { font-size: 8px; }
+
+  .vertical-countdown { right: 10px; transform: none; }
+  .vertical-countdown > p { margin-bottom: 5px; font-size: 7.5px; }
+  .vertical-countdown b { font-size: 16px; }
+  .vertical-countdown small { font-size: 6px; }
+  .vertical-countdown i { font-size: 11px; }
+
+  .intro-lines span { font-size: 13px; }
+  .intro-lines small { font-size: 9px; }
+  .family-copy-new .bilingual-intro { font-size: 11px; }
+  .family-copy-new .bilingual-intro small { font-size: 8px; }
+  .families-date span,
+  .families-date small { font-size: 8px; }
+  .families-date b { font-size: 17px; }
+
+  .dog-ribbon-opener { bottom: 8px; width: 158px; height: 82px; }
+  .dog-illustration { width: 72%; height: 64px; }
+  .dog-arrow { right: -58px; bottom: 12px; width: 82px; font-size: 21px; }
+
+  .about-heading-row > p { font-size: 11px; }
+  .about-heading-row h2 { font-size: clamp(20px, 5.1vw, 25px); }
+  .story-row span { font-size: 14px; }
+  .story-row small { font-size: 10px; }
+
+  /* The family fade starts lower, keeping more of the dogs and dress clear. */
+  .family-gradient-photo::after {
+    background: linear-gradient(0deg, #f4ead9 0%, rgba(244,234,217,.74) 8%, rgba(244,234,217,.18) 20%, transparent 34%);
+  }
+
+  .family-invite-kicker { font-size: 11px; }
+  .family-invitation h2 { font-size: 29px; }
+  .family-invite-copy { font-size: 13px; line-height: 1.68; }
+  .newlywed-names small { font-size: 10px; }
+  .newlywed-names b { font-size: 24px; }
+  .family-hosts dt { font-size: 11px; }
+  .family-hosts dd { font-size: 14px; }
+  .wedding-facts small { font-size: 9px; }
+  .wedding-facts b { font-size: 15px; }
+  .family-venue small { font-size: 9px; }
+  .family-venue b { font-size: 18px; }
+  .respectfully-invite { font-size: 11px; }
+
+  .venue-copy { padding-left: 20px; padding-right: 20px; }
+  .venue-hotel-row { align-items: flex-end; gap: 5px; }
+  .venue-logo-mark { width: 90px; margin-left: -2px; }
+  .venue-hotel-row .venue-name { margin-bottom: 2px; font-size: 16px; }
+  .venue-hotel-row .venue-name small { font-size: 8px; }
+  .venue-hotel-row .venue-address { font-size: 9px; }
+  .venue-hotel-row .venue-address small { font-size: 7px; }
+  .venue-detail-trigger { padding: 10px 0 8px 12px; font-size: 11px; letter-spacing: .08em; }
+
+  .venue-map-panel { padding: 44px 12px 24px; align-items: center; }
+  .venue-map-crop { width: calc(100% - 4px); margin: 0 auto; }
+  .venue-contact-card { width: calc(100% - 12px); margin: 0 auto; gap: 11px; }
+  .venue-contact-card span { font-size: 11px; }
+  .venue-contact-card b { font-size: 15px; }
+  .venue-contact-card small { font-size: 11px; }
+  .venue-contact-card a { font-size: 11px; }
+  .venue-contact-card .map-link { padding: 10px 13px; font-size: 12px; }
+
+  .transport-panel { align-items: stretch; padding: 48px 17px 30px; text-align: left; }
+  .transport-kicker { font-size: 10px; }
+  .transport-panel > h2 { align-items: flex-start; text-align: left; font-size: 37px; }
+  .transport-panel h2 small { font-size: 11px; line-height: 1.5; }
+  .transport-choice-row { grid-template-columns: minmax(0, 3fr) 70px; gap: 10px; }
+  .transport-tabs { gap: 5px; }
+  .transport-tabs button { gap: 6px; }
+  .transport-icon { width: 44px !important; }
+  .transport-tabs button > span,
+  .parking-option > span { font-size: 11px; }
+  .parking-option { padding-left: 8px; }
+  .parking-option::before { top: -15px; font-size: 6px; }
+  .transport-slide { padding: 23px 19px; }
+  .transport-slide small { font-size: 9px; }
+  .transport-slide h3 { font-size: 25px; }
+  .transport-slide p { font-size: 13px; line-height: 1.8; }
+}

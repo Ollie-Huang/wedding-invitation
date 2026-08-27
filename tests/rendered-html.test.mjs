@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.3 invitation adds the hotel portrait, triangular guide and mobile scroll cues", async () => {
+test("v0.8.4 invitation adds replayable copy, click-to-open dogs and image travel choices", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -24,7 +24,7 @@ test("v0.8.3 invitation adds the hotel portrait, triangular guide and mobile scr
   assert.match(source, /從一次不經意的相遇開始/);
   assert.match(source, /visualViewport/);
   assert.match(source, /landscapeTipOpen/);
-  assert.match(source, /按住雙犬或緞帶/);
+  assert.match(source, /向右拖拉或點擊雙犬即可展開/);
   assert.match(source, /台南晶英酒店・大成廳/);
   assert.match(source, /silks-place-logo\.png/);
   assert.match(source, /silks-traffic-guide\.png/);
@@ -40,8 +40,11 @@ test("v0.8.3 invitation adds the hotel portrait, triangular guide and mobile scr
   assert.doesNotMatch(source, /short: "出席回覆"/);
   assert.match(source, /viewport\.scale > 1\.01/);
   assert.match(source, /COUNTDOWN <span>TO WEDDING/);
-  assert.match(source, /mobile-scroll-cue/);
-  assert.match(source, /transport-icon-/);
+  assert.doesNotMatch(source, /mobile-scroll-cue/);
+  assert.match(source, /transport-\$\{option\.id\}\.png/);
+  assert.match(source, /transport-parking\.png/);
+  assert.match(source, /transport-choice-row/);
+  assert.match(source, /setTimeout/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
   assert.doesNotMatch(source, />第二章</);
@@ -66,8 +69,10 @@ test("v0.8.3 invitation adds the hotel portrait, triangular guide and mobile scr
   assert.match(styles, /mix-blend-mode: multiply/);
   assert.match(styles, /\.venue-map-panel,\s*\.transport-panel/);
   assert.match(styles, /clip-path: polygon\(0 0, 100% 0, 78% 100%, 0 100%\)/);
-  assert.match(styles, /transport-icon-rail/);
-  assert.match(styles, /scroll-cue-bob/);
+  assert.match(styles, /chevron-chase/);
+  assert.match(styles, /about-page-preview\.is-active/);
+  assert.match(styles, /parking-option/);
+  assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);
   assert.match(styles, /scaleX\(-1\)/);
   assert.match(styles, /scroll-snap-type: y mandatory/);
