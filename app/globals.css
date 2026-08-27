@@ -1491,3 +1491,115 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .transport-icon { width: 43px !important; }
   .transport-slide small { font-size: 12px; }
 }
+
+/* v0.8.6 — cleaner masthead, softer captions and consistently aligned venue details. */
+.vertical-masthead,
+.vertical-countdown {
+  top: max(18px, env(safe-area-inset-top));
+  min-height: 42px;
+}
+.vertical-masthead {
+  left: clamp(27px, 5vw, 76px);
+  align-items: flex-end;
+}
+.vertical-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+.name-lockup { padding-left: 0; }
+
+.family-copy-new .bilingual-intro small { font-size: clamp(11px, .9vw, 13px); }
+
+/* Keep every desktop story rule inside the invitation's inner frame. */
+.story-row { height: 13.5%; }
+.story-row-1 { top: 30%; }
+.story-row-2 { top: 43.6%; }
+.story-row-3 { top: 57.2%; }
+.story-row-4 { top: 70.8%; }
+.story-row-5 { top: 84.4%; }
+
+/* Align the venue copy frame and photograph area around one horizontal center. */
+.venue-page-preview { align-items: center; }
+.venue-copy {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+.venue-preview-visual { align-self: center; height: 100%; }
+
+/* Remove the extra white map halo and keep all transport panels on one baseline. */
+.venue-map-crop {
+  background: transparent;
+  box-shadow: 0 16px 38px rgba(24,43,52,.14);
+}
+.transport-icon-rail img,
+.transport-icon-bus img {
+  width: 122%;
+  height: 122%;
+  max-width: none;
+  transform: scale(1.04);
+}
+.transport-icon-parking {
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  border-radius: 0;
+}
+.parking-symbol {
+  display: grid;
+  place-items: center;
+  width: 72%;
+  aspect-ratio: 1;
+  color: #253f4c;
+  border-radius: 8px 8px 8px 2px;
+  background: linear-gradient(145deg, #f4dda8, #c99c4e);
+  box-shadow: 0 0 0 2px rgba(246,224,176,.22), 0 5px 13px rgba(6,21,29,.2);
+  font: 700 clamp(18px, 2vw, 27px)/1 Arial, sans-serif;
+}
+.transport-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.transport-slide > small,
+.transport-slide > h3,
+.transport-slide > p { flex: 0 0 auto; }
+
+@media (min-width: 761px) {
+  /* The seal sits beside the two-line promise instead of floating beside the title. */
+  .family-title-row .xi-stamp { transform: translateY(clamp(76px, 8vh, 102px)) rotate(45deg); }
+}
+
+@media (max-width: 760px) {
+  .vertical-masthead,
+  .vertical-countdown {
+    top: max(13px, env(safe-area-inset-top));
+    min-height: 43px;
+    transform: none;
+  }
+  .vertical-masthead { left: 20px; }
+
+  /* Restore comfortable spacing while ending the final line near, not beyond, the frame. */
+  .about-bands { flex-basis: 36cqh; }
+  .about-detail-inner { padding-bottom: 16px; }
+  .about-row { width: calc(100% - 42px); margin: 0 21px; padding: 10px 14px; }
+  .about-heading-row { padding-top: 17px; padding-bottom: 13px; }
+  .story-row span { line-height: 1.4; }
+  .story-row small { margin-top: 4px; line-height: 1.34; }
+
+  .family-gradient-photo figcaption {
+    right: 14px;
+    bottom: 3px;
+    color: #662731;
+    font-size: 9px;
+    font-weight: 600;
+    text-shadow: 0 1px rgba(255,245,225,.7);
+  }
+
+  .venue-map-crop { box-shadow: 0 12px 28px rgba(24,43,52,.14); }
+}

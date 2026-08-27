@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.5 invitation restores a wedding seal and refines date, map and travel choices", async () => {
+test("v0.8.6 invitation aligns the masthead, story rules and venue details", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -43,7 +43,9 @@ test("v0.8.5 invitation restores a wedding seal and refines date, map and travel
   assert.doesNotMatch(source, /mobile-scroll-cue/);
   assert.match(source, /transport-\$\{option\.id\}\.png/);
   assert.match(source, /transport-drive-clean\.png/);
-  assert.match(source, /transport-parking-clean\.png/);
+  assert.doesNotMatch(source, /transport-parking-clean\.png/);
+  assert.match(source, /className="parking-symbol">P/);
+  assert.doesNotMatch(source, /className="name-ornament"/);
   assert.match(source, /https:\/\/tainan\.silksplace\.com\/tw\//);
   assert.match(source, /}, 3000\);/);
   assert.match(source, /setTimeout/);
@@ -74,6 +76,8 @@ test("v0.8.5 invitation restores a wedding seal and refines date, map and travel
   assert.match(styles, /dog-chevron-flow/);
   assert.match(styles, /about-page-preview\.is-active/);
   assert.match(styles, /transport-icon-parking/);
+  assert.match(styles, /parking-symbol/);
+  assert.match(styles, /transport-icon-rail img/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);

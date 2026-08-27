@@ -118,7 +118,6 @@ export default function Home() {
   return (
     <main className={`vertical-invitation active-page-${active + 1}`}>
       <header className="vertical-masthead" aria-label="新人姓名">
-        <span className="name-ornament" aria-hidden="true">囍</span>
         <div className="name-lockup">
           <p>冠禎 <i>&amp;</i> 玟慧</p>
           <small>OUR WEDDING DAY</small>
@@ -416,7 +415,9 @@ function VenueDetail() {
         <div className="transport-tabs" role="tablist" aria-label="交通方式">
           {transportOptions.map((option) => (
             <button key={option.id} type="button" role="tab" aria-selected={selectedTransport === option.id} className={selectedTransport === option.id ? "is-active" : ""} onClick={() => setSelectedTransport(option.id)}>
-              <i className={`transport-icon transport-icon-${option.id}`} aria-hidden="true"><img src={option.id === "drive" ? "transport-drive-clean.png" : option.id === "parking" ? "transport-parking-clean.png" : `transport-${option.id}.png`} alt="" /></i><span>{option.label}</span>
+              <i className={`transport-icon transport-icon-${option.id}`} aria-hidden="true">
+                {option.id === "parking" ? <b className="parking-symbol">P</b> : <img src={option.id === "drive" ? "transport-drive-clean.png" : `transport-${option.id}.png`} alt="" />}
+              </i><span>{option.label}</span>
             </button>
           ))}
         </div>
