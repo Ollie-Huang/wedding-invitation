@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.9 invitation precisely crops map/icons and aligns the venue cover", async () => {
+test("v0.8.10 invitation frames the map, restores icons, and aligns the venue cover", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -83,10 +83,13 @@ test("v0.8.9 invitation precisely crops map/icons and aligns the venue cover", a
   assert.match(styles, /width: 216%/);
   assert.match(styles, /right: max\(21px, env\(safe-area-inset-right\)\)/);
   assert.match(styles, /top: max\(19px, env\(safe-area-inset-top\)\)/);
-  assert.match(styles, /width: 224\.6%/);
-  assert.match(styles, /height: 121%/);
-  assert.match(styles, /width: 119%/);
+  assert.match(styles, /width: 237%/);
+  assert.match(styles, /height: 122%/);
+  assert.match(styles, /width: 120%/);
   assert.match(styles, /height: calc\(100% - 52px\)/);
+  assert.match(styles, /border: 1px solid #8f999c/);
+  assert.match(styles, /transform: translate\(-50%, -50%\)/);
+  assert.match(styles, /align-self: start/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);

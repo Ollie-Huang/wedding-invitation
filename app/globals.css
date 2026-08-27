@@ -1714,3 +1714,84 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .transport-icon-rail img { width: auto; height: 121%; transform: none; }
   .transport-icon-bus img { width: 119%; height: 119%; transform: none; }
 }
+
+/* v0.8.10 — four-sided map framing, complete transport icons, and exact venue alignment. */
+.venue-map-crop {
+  box-sizing: border-box;
+  border: 1px solid #8f999c;
+  background: transparent;
+  box-shadow: none;
+}
+.venue-map-crop img {
+  width: 237%;
+  height: auto;
+  max-width: none;
+  transform: translate(-1.7%, -7%);
+  transform-origin: left top;
+}
+
+/* Position each source circle independently so its opaque white canvas is fully clipped. */
+.transport-icon-rail,
+.transport-icon-bus {
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.transport-icon-rail { background: #f6a064; }
+.transport-icon-bus { background: #995daf; }
+.transport-icon-rail img,
+.transport-icon-bus img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  max-width: none;
+  object-fit: unset;
+  transform: translate(-50%, -50%);
+}
+.transport-icon-rail img {
+  width: auto;
+  height: 122%;
+}
+.transport-icon-bus img {
+  width: 120%;
+  height: 120%;
+}
+
+@media (min-width: 761px) {
+  .venue-page-preview { align-items: start; }
+  .venue-copy {
+    align-self: start;
+    height: calc(100% - 52px);
+  }
+  .venue-preview-visual {
+    align-self: start;
+    height: 100%;
+    grid-template-rows: minmax(0, 1fr) 40px;
+    gap: 12px;
+  }
+  .venue-map-crop {
+    width: 86%;
+    align-self: flex-start;
+  }
+  .venue-contact-card {
+    width: 82%;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .venue-copy {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .venue-map-crop {
+    width: calc(100% - 12px);
+    align-self: center;
+  }
+  .venue-map-crop img {
+    width: 237%;
+    transform: translate(-1.7%, -7%);
+  }
+}
