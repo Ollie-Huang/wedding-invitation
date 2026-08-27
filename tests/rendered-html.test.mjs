@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.8 invitation keeps the mobile countdown inside the frame", async () => {
+test("v0.8.9 invitation precisely crops map/icons and aligns the venue cover", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -83,6 +83,10 @@ test("v0.8.8 invitation keeps the mobile countdown inside the frame", async () =
   assert.match(styles, /width: 216%/);
   assert.match(styles, /right: max\(21px, env\(safe-area-inset-right\)\)/);
   assert.match(styles, /top: max\(19px, env\(safe-area-inset-top\)\)/);
+  assert.match(styles, /width: 224\.6%/);
+  assert.match(styles, /height: 121%/);
+  assert.match(styles, /width: 119%/);
+  assert.match(styles, /height: calc\(100% - 52px\)/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);

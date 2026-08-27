@@ -1662,3 +1662,55 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     right: max(21px, env(safe-area-inset-right));
   }
 }
+
+/* v0.8.9 — exact source-image cropping and mathematically matched venue heights. */
+.venue-map-crop img {
+  width: 224.6%;
+  height: auto;
+  max-width: none;
+  transform: translate(-.85%, -.7%);
+  transform-origin: left top;
+}
+
+/* Each source image uses its own measured circle ratio, keeping the vehicle intact. */
+.transport-icon-rail img {
+  width: auto;
+  height: 121%;
+  max-width: none;
+  object-fit: unset;
+  transform: none;
+}
+.transport-icon-bus img {
+  width: 119%;
+  height: 119%;
+  max-width: none;
+  object-fit: unset;
+  transform: none;
+}
+
+@media (min-width: 761px) {
+  .venue-preview-visual {
+    grid-template-rows: minmax(0, 1fr) 40px;
+    gap: 12px;
+  }
+  .venue-route-photo { grid-row: 1; }
+  .venue-detail-trigger { grid-row: 2; height: 40px; }
+  .venue-copy { height: calc(100% - 52px); }
+}
+
+@media (max-width: 760px) {
+  .venue-copy {
+    border: 0;
+    box-shadow: none;
+  }
+  .about-portrait {
+    transform: scale(.94);
+    transform-origin: center;
+  }
+  .venue-map-crop img {
+    width: 224.6%;
+    transform: translate(-.85%, -.7%);
+  }
+  .transport-icon-rail img { width: auto; height: 121%; transform: none; }
+  .transport-icon-bus img { width: 119%; height: 119%; transform: none; }
+}
