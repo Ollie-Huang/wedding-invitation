@@ -1295,3 +1295,199 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .transport-slide h3 { font-size: 25px; }
   .transport-slide p { font-size: 13px; line-height: 1.8; }
 }
+
+/* v0.8.5 — wedding seal, balanced guidance, unified date and refined travel details. */
+.story-page::after {
+  inset: 14px;
+  border-width: 1px;
+}
+
+.name-ornament {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  color: #e0bd7d;
+  border: 2px double currentColor;
+  border-radius: 50%;
+  background: rgba(255,248,232,.06);
+  font: 500 21px/1 "DFKai-SB", "BiauKai", "KaiTi", "STKaiti", serif;
+  text-shadow: 0 1px 8px rgba(224,189,125,.35);
+  transform: rotate(-5deg);
+}
+.name-ornament::before {
+  inset: -5px 4px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: .34;
+  transform: rotate(25deg);
+}
+.name-ornament::after {
+  inset: 4px -5px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: .27;
+  transform: rotate(-24deg);
+}
+
+/* Three hand-drawn chevrons form a centered, softly travelling light path. */
+.dog-arrow {
+  top: 50%;
+  right: -47px;
+  bottom: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 63px;
+  height: 30px;
+  overflow: visible;
+  color: #fff7e7;
+  background: none;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,.72));
+  transform: translateY(-50%);
+  animation: none;
+}
+.dog-arrow i {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  border-radius: 2px;
+  opacity: .24;
+  transform: rotate(45deg);
+  animation: dog-chevron-flow 1.4s ease-in-out infinite;
+}
+.dog-arrow i:nth-child(2) { width: 14px; height: 14px; animation-delay: .18s; }
+.dog-arrow i:nth-child(3) { width: 16px; height: 16px; animation-delay: .36s; }
+@keyframes dog-chevron-flow {
+  0%, 100% { opacity: .2; transform: translateX(-4px) rotate(45deg) scale(.86); }
+  45% { opacity: 1; transform: translateX(4px) rotate(45deg) scale(1); }
+}
+
+/* Date lockup: one color and size, centered between equal rules. */
+.families-date {
+  grid-template-columns: auto auto;
+  justify-content: center;
+  align-items: center;
+  gap: 5px 15px;
+  padding: 13px 0 11px;
+  border-top: 1px solid rgba(160,116,56,.38);
+  border-bottom: 1px solid rgba(160,116,56,.38);
+  text-align: center;
+}
+.families-date span,
+.families-date b {
+  color: #9a303a;
+  font: 400 clamp(18px, 1.9vw, 28px) Georgia, serif;
+  letter-spacing: .12em;
+}
+.families-date small { grid-column: 1 / -1; font-size: 9px; }
+
+/* Raise English readability by two typographic steps. */
+.intro-lines small { font-size: clamp(10px, .82vw, 12px); }
+.family-copy-new h1 small { font-size: clamp(10px, .9vw, 14px); }
+.family-copy-new .bilingual-intro small { display: block; margin-top: 5px; font-size: clamp(10px, .8vw, 12px); }
+.family-gradient-photo figcaption { bottom: 17px; color: #fff0d1; font-size: 9px; text-shadow: 0 1px 8px rgba(52,5,10,.85); }
+
+/* All English copy on the venue cover shares the MEET US IN TAINAN gold. */
+.venue-eyebrow,
+.venue-copy h1 small,
+.venue-name small,
+.venue-address small { color: #d6bd8b; }
+.venue-eyebrow { font-size: 10px; }
+.venue-copy h1 small { font-size: clamp(11px, 1vw, 15px); }
+.venue-name small { font-size: clamp(10px, .8vw, 12px); }
+.venue-address small { font-size: clamp(9px, .72vw, 11px); }
+
+/* Larger centered map, and distinct website/map actions. */
+.venue-map-panel {
+  align-items: center;
+  padding-left: clamp(24px, 3.6vw, 58px);
+  padding-right: clamp(68px, 8vw, 124px);
+}
+.venue-map-crop {
+  align-self: center;
+  width: 100%;
+  max-width: 760px;
+  border-color: rgba(50,78,88,.28);
+  box-shadow: 0 16px 38px rgba(24,43,52,.12), 0 0 0 7px rgba(255,255,255,.68);
+}
+.venue-contact-card { width: 96%; max-width: 760px; }
+.venue-contact-card .hotel-website {
+  align-self: center;
+  justify-self: start;
+  padding: 6px 2px 5px;
+  color: #315b6d;
+  border-bottom: 1px solid rgba(49,91,109,.45);
+  background: transparent;
+  font-family: Baskerville, Georgia, serif;
+  letter-spacing: .035em;
+}
+.venue-contact-card .hotel-website:hover,
+.venue-contact-card .hotel-website:focus-visible { color: #a4763e; border-bottom-color: #a4763e; }
+.venue-contact-card .map-link {
+  gap: 12px;
+  border: 1px solid rgba(38,75,90,.28);
+  border-radius: 999px;
+  background: linear-gradient(120deg, #203f4d, #3d6574);
+  box-shadow: 0 8px 20px rgba(25,53,65,.17);
+}
+.venue-contact-card .map-link::before { content: "⌖"; color: #e5c98f; font: 17px/1 Georgia, serif; }
+
+/* Four equal travel choices again, without decorative white icon borders. */
+.transport-choice-row { display: contents; }
+.transport-tabs { grid-template-columns: repeat(4, 1fr); }
+.transport-icon {
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 50%;
+  background: transparent;
+}
+.transport-icon img { object-fit: contain; border-radius: inherit; }
+.transport-icon-parking { overflow: visible; border-radius: 0; }
+.transport-icon-parking img { border-radius: 0; }
+.transport-slide small { font-size: 11px; }
+
+@media (max-width: 760px) {
+  .name-ornament { width: 29px; height: 29px; font-size: 18px; }
+  .dog-arrow { top: 50%; right: -43px; bottom: auto; width: 57px; transform: translateY(-50%); }
+  .dog-arrow i { width: 10px; height: 10px; }
+  .dog-arrow i:nth-child(2) { width: 12px; height: 12px; }
+  .dog-arrow i:nth-child(3) { width: 14px; height: 14px; }
+
+  .families-date { gap: 4px 10px; margin-top: 10px; padding: 8px 0 7px; }
+  .families-date span,
+  .families-date b { font-size: 18px; }
+  .families-date small { font-size: 9px; }
+  .family-copy-new h1 small { font-size: 10px; }
+  .family-copy-new .bilingual-intro small { font-size: 10px; }
+  .family-gradient-photo figcaption { right: 15px; bottom: 12px; font-size: 9px; }
+
+  /* Fit the larger bilingual story without letting the final line cross the frame. */
+  .about-bands { flex-basis: 39cqh; }
+  .about-detail-inner { padding-bottom: 12px; }
+  .about-row { width: calc(100% - 42px); margin: 0 21px; padding: 7px 14px; }
+  .about-heading-row { padding-top: 15px; padding-bottom: 11px; }
+  .about-heading-row > p { margin-bottom: 5px; }
+  .story-row span { line-height: 1.32; }
+  .story-row small { margin-top: 2px; font-size: 11px; line-height: 1.26; }
+
+  /* Match the mobile invitation hierarchy to desktop. */
+  .family-invitation h2 { font-size: 27px; }
+  .newlywed-names small { font-size: 10px; }
+  .newlywed-names b { font-size: 22px; }
+  .family-hosts dt { font-size: 10px; }
+  .family-hosts dd { font-size: 13px; }
+
+  .venue-hotel-row .venue-address { font-size: 10px; }
+  .venue-hotel-row .venue-address small { color: #d6bd8b; font-size: 9px; }
+
+  .venue-map-panel { padding: 43px 8px 22px; }
+  .venue-map-crop { width: calc(100% - 8px); max-width: none; margin: 0 auto; box-shadow: 0 12px 28px rgba(24,43,52,.13), 0 0 0 4px rgba(255,255,255,.72); }
+  .venue-contact-card { width: calc(100% - 18px); }
+  .transport-kicker { width: 100%; text-align: left; }
+  .transport-tabs { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .transport-icon { width: 43px !important; }
+  .transport-slide small { font-size: 12px; }
+}

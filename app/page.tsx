@@ -118,7 +118,7 @@ export default function Home() {
   return (
     <main className={`vertical-invitation active-page-${active + 1}`}>
       <header className="vertical-masthead" aria-label="新人姓名">
-        <span className="name-ornament" aria-hidden="true" />
+        <span className="name-ornament" aria-hidden="true">囍</span>
         <div className="name-lockup">
           <p>冠禎 <i>&amp;</i> 玟慧</p>
           <small>OUR WEDDING DAY</small>
@@ -250,7 +250,7 @@ function DogRibbon({ label, onOpen }: { label: string; onOpen: () => void }) {
       aria-label={`${label}，向右拖拉或點擊雙犬即可展開`}
     >
       <span className="dog-illustration"><img src="dog-ribbon-guide.png" alt="黃金獵犬與長毛臘腸拉著緞帶" draggable={false} /></span>
-      <span className="dog-arrow" aria-hidden="true">››››››</span>
+      <span className="dog-arrow" aria-hidden="true"><i /><i /><i /></span>
     </button>
   );
 }
@@ -344,7 +344,7 @@ function FamiliesDetail() {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
     const timer = window.setTimeout(() => {
       scrollRef.current?.scrollTo({ top: scrollRef.current.clientHeight, behavior: "smooth" });
-    }, 2000);
+    }, 3000);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -395,7 +395,7 @@ function VenueDetail() {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
     const timer = window.setTimeout(() => {
       scrollRef.current?.scrollTo({ top: scrollRef.current.clientHeight, behavior: "smooth" });
-    }, 2000);
+    }, 3000);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -406,24 +406,19 @@ function VenueDetail() {
         <div className="venue-contact-card">
           <p><span>地址</span><b>700 台南市中西區和意路 1 號</b><small>No. 1, Heyi Rd., West Central Dist., Tainan City 700</small></p>
           <p><span>聯絡電話</span><b>+886 6 213 6290</b></p>
-          <a href="https://www.silksplace-tainan.com.tw/" target="_blank" rel="noreferrer">www.silksplace-tainan.com.tw ↗</a>
+          <a className="hotel-website" href="https://tainan.silksplace.com/tw/" target="_blank" rel="noreferrer">tainan.silksplace.com/tw/ ↗</a>
           <a className="map-link" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟 Google 地圖 <span>↗</span></a>
         </div>
       </section>
       <section className="transport-panel">
         <p className="transport-kicker">ARRIVAL GUIDE</p>
         <h2>前往晶英<small>選擇交通方式，查看對應路線資訊</small></h2>
-        <div className="transport-choice-row">
-          <div className="transport-tabs" role="tablist" aria-label="前往交通方式">
-          {transportOptions.filter((option) => option.id !== "parking").map((option) => (
+        <div className="transport-tabs" role="tablist" aria-label="交通方式">
+          {transportOptions.map((option) => (
             <button key={option.id} type="button" role="tab" aria-selected={selectedTransport === option.id} className={selectedTransport === option.id ? "is-active" : ""} onClick={() => setSelectedTransport(option.id)}>
-              <i className="transport-icon" aria-hidden="true"><img src={`transport-${option.id}.png`} alt="" /></i><span>{option.label}</span>
+              <i className={`transport-icon transport-icon-${option.id}`} aria-hidden="true"><img src={option.id === "drive" ? "transport-drive-clean.png" : option.id === "parking" ? "transport-parking-clean.png" : `transport-${option.id}.png`} alt="" /></i><span>{option.label}</span>
             </button>
           ))}
-          </div>
-          <button type="button" role="tab" aria-selected={selectedTransport === "parking"} className={`parking-option ${selectedTransport === "parking" ? "is-active" : ""}`} onClick={() => setSelectedTransport("parking")}>
-            <i className="transport-icon" aria-hidden="true"><img src="transport-parking.png" alt="" /></i><span>停車</span>
-          </button>
         </div>
         <div className="transport-slide" key={selected.id} role="tabpanel">
           <small>{selected.label.toUpperCase()} INFORMATION</small>

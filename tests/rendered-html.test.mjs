@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.4 invitation adds replayable copy, click-to-open dogs and image travel choices", async () => {
+test("v0.8.5 invitation restores a wedding seal and refines date, map and travel choices", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -42,8 +42,10 @@ test("v0.8.4 invitation adds replayable copy, click-to-open dogs and image trave
   assert.match(source, /COUNTDOWN <span>TO WEDDING/);
   assert.doesNotMatch(source, /mobile-scroll-cue/);
   assert.match(source, /transport-\$\{option\.id\}\.png/);
-  assert.match(source, /transport-parking\.png/);
-  assert.match(source, /transport-choice-row/);
+  assert.match(source, /transport-drive-clean\.png/);
+  assert.match(source, /transport-parking-clean\.png/);
+  assert.match(source, /https:\/\/tainan\.silksplace\.com\/tw\//);
+  assert.match(source, /}, 3000\);/);
   assert.match(source, /setTimeout/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
@@ -69,9 +71,10 @@ test("v0.8.4 invitation adds replayable copy, click-to-open dogs and image trave
   assert.match(styles, /mix-blend-mode: multiply/);
   assert.match(styles, /\.venue-map-panel,\s*\.transport-panel/);
   assert.match(styles, /clip-path: polygon\(0 0, 100% 0, 78% 100%, 0 100%\)/);
-  assert.match(styles, /chevron-chase/);
+  assert.match(styles, /dog-chevron-flow/);
   assert.match(styles, /about-page-preview\.is-active/);
-  assert.match(styles, /parking-option/);
+  assert.match(styles, /transport-icon-parking/);
+  assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);
   assert.match(styles, /scaleX\(-1\)/);
