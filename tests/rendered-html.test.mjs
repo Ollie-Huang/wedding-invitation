@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.11 invitation blends icon edges and slowly guides mobile detail scrolling", async () => {
+test("v0.8.12 invitation masks source rims above original-colour transport artwork", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -95,6 +95,10 @@ test("v0.8.11 invitation blends icon edges and slowly guides mobile detail scrol
   assert.match(styles, /align-self: start/);
   assert.match(styles, /mix-blend-mode: multiply/);
   assert.match(styles, /\.story-page \{\s*height: 100%;\s*min-height: 100%/);
+  assert.match(styles, /mix-blend-mode: normal/);
+  assert.match(styles, /\.transport-icon-rail::after/);
+  assert.match(styles, /border-color: #f6a064/);
+  assert.match(styles, /border-color: #995daf/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);

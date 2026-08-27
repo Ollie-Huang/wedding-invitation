@@ -1811,3 +1811,26 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     height: 100%;
   }
 }
+
+/* v0.8.12 — keep vehicle artwork in its original colours and mask only the source rim. */
+.transport-icon-rail,
+.transport-icon-bus {
+  isolation: isolate;
+}
+.transport-icon-rail img,
+.transport-icon-bus img {
+  z-index: 1;
+  mix-blend-mode: normal;
+}
+.transport-icon-rail::after,
+.transport-icon-bus::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border: 2px solid;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.transport-icon-rail::after { border-color: #f6a064; }
+.transport-icon-bus::after { border-color: #995daf; }
