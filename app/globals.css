@@ -1795,3 +1795,19 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     transform: translate(-1.7%, -7%);
   }
 }
+
+/* v0.8.11 — blend source canvases into solid icon discs and keep mobile pages full-height. */
+.transport-icon-rail img,
+.transport-icon-bus img {
+  mix-blend-mode: multiply;
+}
+
+@media (max-width: 760px) {
+  .story-page {
+    height: 100%;
+    min-height: 100%;
+  }
+  .about-page-preview {
+    height: 100%;
+  }
+}

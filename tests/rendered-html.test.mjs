@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.10 invitation frames the map, restores icons, and aligns the venue cover", async () => {
+test("v0.8.11 invitation blends icon edges and slowly guides mobile detail scrolling", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -49,6 +49,9 @@ test("v0.8.10 invitation frames the map, restores icons, and aligns the venue co
   assert.match(source, /https:\/\/tainan\.silksplace\.com\/tw\//);
   assert.match(source, /}, 3000\);/);
   assert.match(source, /setTimeout/);
+  assert.match(source, /slowScrollTo/);
+  assert.match(source, /duration = 1800/);
+  assert.match(source, /Math\.cos\(Math\.PI \* progress\)/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
   assert.doesNotMatch(source, />第二章</);
@@ -90,6 +93,8 @@ test("v0.8.10 invitation frames the map, restores icons, and aligns the venue co
   assert.match(styles, /border: 1px solid #8f999c/);
   assert.match(styles, /transform: translate\(-50%, -50%\)/);
   assert.match(styles, /align-self: start/);
+  assert.match(styles, /mix-blend-mode: multiply/);
+  assert.match(styles, /\.story-page \{\s*height: 100%;\s*min-height: 100%/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);

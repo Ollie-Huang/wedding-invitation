@@ -20,6 +20,41 @@ const aboutStory = [
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
+function slowScrollTo(element: HTMLElement, target: number, duration = 1800) {
+  const start = element.scrollTop;
+  const distance = target - start;
+  const previousSnap = element.style.scrollSnapType;
+  let animationFrame = 0;
+  let finished = false;
+
+  element.style.scrollSnapType = "none";
+
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    window.cancelAnimationFrame(animationFrame);
+    element.style.scrollSnapType = previousSnap;
+    element.removeEventListener("pointerdown", finish);
+    element.removeEventListener("touchstart", finish);
+    element.removeEventListener("wheel", finish);
+  };
+
+  const startedAt = window.performance.now();
+  const step = (now: number) => {
+    const progress = Math.min((now - startedAt) / duration, 1);
+    const eased = (1 - Math.cos(Math.PI * progress)) / 2;
+    element.scrollTop = start + distance * eased;
+    if (progress < 1) animationFrame = window.requestAnimationFrame(step);
+    else finish();
+  };
+
+  element.addEventListener("pointerdown", finish, { passive: true });
+  element.addEventListener("touchstart", finish, { passive: true });
+  element.addEventListener("wheel", finish, { passive: true });
+  animationFrame = window.requestAnimationFrame(step);
+  return finish;
+}
+
 function remainingTime() {
   const remaining = Math.max(0, WEDDING_AT - Date.now());
   return {
@@ -341,10 +376,14 @@ function FamiliesDetail() {
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
+    let stopScroll = () => {};
     const timer = window.setTimeout(() => {
-      scrollRef.current?.scrollTo({ top: scrollRef.current.clientHeight, behavior: "smooth" });
+      if (scrollRef.current) stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight);
     }, 3000);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      stopScroll();
+    };
   }, []);
 
   return (
@@ -392,10 +431,14 @@ function VenueDetail() {
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
+    let stopScroll = () => {};
     const timer = window.setTimeout(() => {
-      scrollRef.current?.scrollTo({ top: scrollRef.current.clientHeight, behavior: "smooth" });
+      if (scrollRef.current) stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight);
     }, 3000);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      stopScroll();
+    };
   }, []);
 
   return (
