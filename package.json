@@ -1,6 +1,6 @@
 {
   "name": "interactive-wedding-invitation",
-  "version": "0.8.6",
+  "version": "0.8.8",
   "private": true,
   "engines": {
     "node": ">=22.13.0"

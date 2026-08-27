@@ -1603,3 +1603,62 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
   .venue-map-crop { box-shadow: 0 12px 28px rgba(24,43,52,.14); }
 }
+
+/* v0.8.7 — hard crop the map/icons and lock transport content to one baseline. */
+.venue-map-crop {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.venue-map-crop img {
+  width: 216%;
+  height: auto;
+  transform: translate(-2.4%, -2.2%) scale(1.045);
+  transform-origin: left top;
+}
+
+.transport-icon-rail img,
+.transport-icon-bus img {
+  width: 150%;
+  height: 150%;
+  max-width: none;
+  object-fit: cover;
+  transform: scale(1.08);
+  transform-origin: center;
+}
+.transport-slide {
+  width: 100%;
+  height: clamp(230px, 28vh, 292px);
+  min-height: 230px;
+  overflow-y: auto;
+}
+
+@media (min-width: 761px) {
+  /* Match the copy frame to the actual photograph height, excluding its action row. */
+  .venue-copy { height: calc(100% - 54px); }
+}
+
+@media (max-width: 760px) {
+  /* More breathing room pushes the final line toward the lower inner frame. */
+  .about-row { padding-top: 12px; padding-bottom: 12px; }
+  .about-heading-row { padding-top: 19px; padding-bottom: 15px; }
+  .story-row span { line-height: 1.46; }
+  .story-row small { margin-top: 5px; line-height: 1.4; }
+
+  .venue-map-crop img {
+    width: 222%;
+    transform: translate(-2.7%, -2.4%) scale(1.05);
+  }
+  .transport-slide {
+    height: 230px;
+    min-height: 230px;
+  }
+}
+
+/* v0.8.8 — keep the mobile countdown safely inside the 14px invitation frame. */
+@media (max-width: 760px) {
+  .vertical-countdown {
+    top: max(19px, env(safe-area-inset-top));
+    right: max(21px, env(safe-area-inset-right));
+  }
+}
