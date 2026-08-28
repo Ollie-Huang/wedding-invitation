@@ -414,6 +414,33 @@ function FamiliesDetail() {
         <p className="family-venue"><small>地點 · VENUE</small><b>台南晶英酒店・大成廳</b></p>
         <p className="respectfully-invite">黃府 · 李府　敬邀</p>
       </div>
+      <section className="family-combined-page" aria-label="婚宴資訊合併預覽">
+        <figure className="family-combined-photo">
+          <img src="families-detail.jpg" alt="冠禎與玟慧手持氣球的婚紗照" />
+          <figcaption>OUR WEDDING INVITATION</figcaption>
+        </figure>
+        <div className="family-combined-card">
+          <div className="family-combined-heading">
+            <span aria-hidden="true">囍</span>
+            <div><small>兩姓締盟 · 良緣永結</small><h2>敬邀您蒞臨我們的婚宴</h2></div>
+          </div>
+          <p className="family-combined-copy">誠摯邀請您一同見證兩家相聚、兩心相許的重要時刻。</p>
+          <div className="family-combined-names">
+            <p><small>新郎 · GROOM</small><b>黃冠禎</b></p><i>&amp;</i><p><small>新娘 · BRIDE</small><b>李玟慧</b></p>
+          </div>
+          <dl className="family-combined-hosts">
+            <div><dt>男方主婚人</dt><dd>黃春安、謝秀鳳</dd></div>
+            <div><dt>女方主婚人</dt><dd>李文獎、黃意芬</dd></div>
+          </dl>
+          <div className="family-combined-facts">
+            <p><small>DATE</small><b>2026.12.12</b></p>
+            <p><small>WELCOME</small><b>17:30</b></p>
+            <p><small>BANQUET</small><b>18:00</b></p>
+          </div>
+          <p className="family-combined-venue"><small>VENUE</small><b>台南晶英酒店・大成廳</b></p>
+          <p className="family-combined-signature">黃府 · 李府　敬邀</p>
+        </div>
+      </section>
     </div>
   );
 }
@@ -468,6 +495,33 @@ function VenueDetail() {
           <small>{selected.label.toUpperCase()} INFORMATION</small>
           <h3>{selected.title}</h3>
           <p>{selected.text}</p>
+        </div>
+      </section>
+      <section className="venue-combined-page" aria-label="地點與交通資訊合併預覽">
+        <div className="venue-combined-map">
+          <div className="venue-map-crop"><img src="silks-traffic-guide.png" alt="台南晶英酒店周邊交通地圖" /></div>
+          <div className="venue-combined-contact">
+            <p><small>台南晶英酒店</small><b>700 台南市中西區和意路 1 號</b></p>
+            <a href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟地圖 ↗</a>
+          </div>
+        </div>
+        <div className="venue-combined-transport">
+          <p className="transport-kicker">VENUE &amp; ARRIVAL GUIDE</p>
+          <h2>相聚・台南<small>地點與交通資訊整合預覽</small></h2>
+          <div className="transport-tabs" role="tablist" aria-label="合併預覽交通方式">
+            {transportOptions.map((option) => (
+              <button key={`combined-${option.id}`} type="button" role="tab" aria-selected={selectedTransport === option.id} className={selectedTransport === option.id ? "is-active" : ""} onClick={() => setSelectedTransport(option.id)}>
+                <i className={`transport-icon transport-icon-${option.id}`} aria-hidden="true">
+                  {option.id === "parking" ? <b className="parking-symbol">P</b> : <img src={option.id === "drive" ? "transport-drive-clean.png" : `transport-${option.id}.png`} alt="" />}
+                </i><span>{option.label}</span>
+              </button>
+            ))}
+          </div>
+          <div className="transport-slide" key={`combined-${selected.id}`} role="tabpanel">
+            <small>{selected.label.toUpperCase()} INFORMATION</small>
+            <h3>{selected.title}</h3>
+            <p>{selected.text}</p>
+          </div>
         </div>
       </section>
     </div>

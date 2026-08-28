@@ -1834,3 +1834,126 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 }
 .transport-icon-rail::after { border-color: #f6a064; }
 .transport-icon-bus::after { border-color: #995daf; }
+
+/* v0.8.13 — optional third mobile pages combining each existing two-page detail. */
+.family-combined-page,
+.venue-combined-page { display: none; }
+
+@media (max-width: 760px) {
+  .family-combined-page,
+  .venue-combined-page {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .family-combined-page {
+    display: grid;
+    grid-template-rows: 34% 66%;
+    color: #fff1d4;
+    background: linear-gradient(145deg, #4d0a11, #741923 60%, #35070c);
+  }
+  .family-combined-photo {
+    position: relative;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(224,178,90,.5);
+    background: #4b0a11;
+  }
+  .family-combined-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+  .family-combined-photo::after {
+    content: "";
+    position: absolute;
+    inset: 60% 0 0;
+    background: linear-gradient(transparent, rgba(66,7,13,.82));
+    pointer-events: none;
+  }
+  .family-combined-photo figcaption {
+    position: absolute;
+    z-index: 1;
+    right: 18px;
+    bottom: 10px;
+    color: #e5be73;
+    font: 7px Arial, sans-serif;
+    letter-spacing: .2em;
+  }
+  .family-combined-card {
+    min-height: 0;
+    padding: 17px 22px 15px;
+    overflow: hidden;
+  }
+  .family-combined-heading { display: grid; grid-template-columns: 48px 1fr; align-items: center; gap: 12px; }
+  .family-combined-heading > span {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: #f0cc81;
+    border: 3px double #d7a94e;
+    font-size: 26px;
+  }
+  .family-combined-heading small { color: #d9ad5b; font-size: 8px; letter-spacing: .14em; }
+  .family-combined-heading h2 { margin: 4px 0 0; font-size: 21px; font-weight: 500; letter-spacing: .07em; }
+  .family-combined-copy { margin: 10px 0; color: rgba(255,241,212,.78); font-size: 10px; line-height: 1.55; }
+  .family-combined-names { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 10px; padding: 8px 0; border-block: 1px solid rgba(219,173,84,.27); text-align: center; }
+  .family-combined-names p { margin: 0; }
+  .family-combined-names small { display: block; color: #d7aa55; font: 7px Arial, sans-serif; letter-spacing: .12em; }
+  .family-combined-names b { display: block; margin-top: 3px; font: 500 19px "DFKai-SB", "KaiTi", serif; }
+  .family-combined-names i { color: #d6ab5b; font: italic 18px Georgia, serif; }
+  .family-combined-hosts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 9px 0 0; }
+  .family-combined-hosts div { text-align: center; }
+  .family-combined-hosts dt { color: #d4a958; font-size: 8px; }
+  .family-combined-hosts dd { margin: 3px 0 0; font-size: 11px; }
+  .family-combined-facts { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: 6px; margin-top: 9px; }
+  .family-combined-facts p { margin: 0; padding: 6px 5px; border: 1px solid rgba(220,174,88,.25); background: rgba(46,1,6,.28); text-align: center; }
+  .family-combined-facts small { display: block; color: #d2a655; font: 6px Arial, sans-serif; }
+  .family-combined-facts b { display: block; margin-top: 3px; font-size: 11px; font-weight: 500; }
+  .family-combined-venue { display: flex; justify-content: center; align-items: baseline; gap: 8px; margin: 9px 0 0; }
+  .family-combined-venue small { color: #d5aa58; font: 7px Arial, sans-serif; letter-spacing: .12em; }
+  .family-combined-venue b { font-size: 13px; font-weight: 500; }
+  .family-combined-signature { margin: 7px 0 0; color: #dcb66d; font-size: 8px; text-align: center; letter-spacing: .16em; }
+
+  .venue-combined-page {
+    display: grid;
+    grid-template-rows: 39% 61%;
+    background: linear-gradient(180deg, #f2f2ee 0 39%, #294b5a 39% 100%);
+  }
+  .venue-combined-map { min-height: 0; padding: 17px 18px 10px; overflow: hidden; }
+  .venue-combined-map .venue-map-crop { width: 100%; height: calc(100% - 49px); margin: 0; aspect-ratio: auto; }
+  .venue-combined-map .venue-map-crop img { width: 237%; transform: translate(-1.7%, -7%); }
+  .venue-combined-contact { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; height: 43px; padding-top: 7px; color: #294b5a; }
+  .venue-combined-contact p { margin: 0; min-width: 0; }
+  .venue-combined-contact small,
+  .venue-combined-contact b { display: block; }
+  .venue-combined-contact small { color: #a37a42; font-size: 8px; letter-spacing: .1em; }
+  .venue-combined-contact b { margin-top: 2px; overflow: hidden; font-size: 10px; font-weight: 500; white-space: nowrap; text-overflow: ellipsis; }
+  .venue-combined-contact a { padding: 7px 9px; color: #fff8e9; border-radius: 999px; background: #294b5a; font-size: 9px; text-decoration: none; }
+  .venue-combined-transport { min-height: 0; padding: 15px 18px 14px; overflow: hidden; color: #eef2ef; }
+  .venue-combined-transport .transport-kicker { margin: 0; font-size: 7px; }
+  .venue-combined-transport > h2 { display: flex; align-items: baseline; gap: 9px; margin: 5px 0 8px; color: #fff8e9; font-size: 25px; font-weight: 500; }
+  .venue-combined-transport > h2 small { color: #d8bd89; font-size: 8px; font-weight: 400; }
+  .venue-combined-transport .transport-tabs { gap: 4px; }
+  .venue-combined-transport .transport-tabs button { gap: 4px; padding-bottom: 6px; }
+  .venue-combined-transport .transport-icon { width: 39px !important; }
+  .venue-combined-transport .transport-tabs button > span { font-size: 9px; }
+  .venue-combined-transport .transport-slide {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin-top: 9px;
+    padding: 13px 14px;
+    overflow: hidden;
+  }
+  .venue-combined-transport .transport-slide small { font-size: 8px; }
+  .venue-combined-transport .transport-slide h3 { margin: 5px 0 7px; font-size: 21px; }
+  .venue-combined-transport .transport-slide p { margin: 0; font-size: 11px; line-height: 1.55; }
+}

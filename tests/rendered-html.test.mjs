@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.12 invitation masks source rims above original-colour transport artwork", async () => {
+test("v0.8.13 invitation adds optional combined mobile detail pages", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -45,6 +45,10 @@ test("v0.8.12 invitation masks source rims above original-colour transport artwo
   assert.match(source, /transport-drive-clean\.png/);
   assert.doesNotMatch(source, /transport-parking-clean\.png/);
   assert.match(source, /className="parking-symbol">P/);
+  assert.match(source, /family-combined-page/);
+  assert.match(source, /venue-combined-page/);
+  assert.match(source, /婚宴資訊合併預覽/);
+  assert.match(source, /地點與交通資訊合併預覽/);
   assert.doesNotMatch(source, /className="name-ornament"/);
   assert.match(source, /https:\/\/tainan\.silksplace\.com\/tw\//);
   assert.match(source, /}, 3000\);/);
@@ -99,6 +103,10 @@ test("v0.8.12 invitation masks source rims above original-colour transport artwo
   assert.match(styles, /\.transport-icon-rail::after/);
   assert.match(styles, /border-color: #f6a064/);
   assert.match(styles, /border-color: #995daf/);
+  assert.match(styles, /\.family-combined-page/);
+  assert.match(styles, /\.venue-combined-page/);
+  assert.match(styles, /grid-template-rows: 34% 66%/);
+  assert.match(styles, /grid-template-rows: 39% 61%/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);
