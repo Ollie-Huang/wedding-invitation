@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.15 invitation removes combined pages and repeats a non-scrolling return gesture", async () => {
+test("v0.8.16 invitation waits for the full opening and uses one hand-drawn arrow", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -51,11 +51,16 @@ test("v0.8.15 invitation removes combined pages and repeats a non-scrolling retu
   assert.doesNotMatch(source, /地點與交通資訊合併預覽/);
   assert.doesNotMatch(source, /className="name-ornament"/);
   assert.match(source, /https:\/\/tainan\.silksplace\.com\/tw\//);
-  assert.match(source, /}, 1000\);/);
+  assert.match(source, /MOBILE_DETAIL_SCROLL_WAIT = 1000/);
+  assert.match(source, /waitForDetailOpening/);
+  assert.match(source, /"sheet-open"/);
+  assert.match(source, /"venue-opening-away"/);
   assert.match(source, /setTimeout/);
   assert.match(source, /slowScrollTo/);
   assert.match(source, /duration = 1800/);
   assert.match(source, /SwipeGesture/);
+  assert.match(source, /className="swipe-single-arrow"/);
+  assert.doesNotMatch(source, /swipe-double-arrow/);
   assert.match(source, /swipe-hand\.png/);
   assert.match(source, /swipeGuideMode/);
   assert.match(source, /setSwipeGuideMode\("down"\)/);
@@ -110,6 +115,8 @@ test("v0.8.15 invitation removes combined pages and repeats a non-scrolling retu
   assert.match(styles, /border-color: #f6a064/);
   assert.match(styles, /border-color: #995daf/);
   assert.match(styles, /\.swipe-gesture\.is-visible/);
+  assert.match(styles, /\.swipe-single-arrow/);
+  assert.match(styles, /-webkit-text-stroke: 2px #050505/);
   assert.match(styles, /mobile-swipe-guide-up 1800ms/);
   assert.match(styles, /mobile-swipe-guide-down 1400ms/);
   assert.match(styles, /cubic-bezier\(\.45,0,\.25,1\) 2/);

@@ -19,6 +19,35 @@ const aboutStory = [
 ] as const;
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+const MOBILE_DETAIL_SCROLL_WAIT = 1000;
+
+function waitForDetailOpening(
+  target: Element | null,
+  animationName: string,
+  onReady: () => void,
+) {
+  let timer = 0;
+  let started = false;
+
+  const beginCountdown = () => {
+    if (started) return;
+    started = true;
+    timer = window.setTimeout(onReady, MOBILE_DETAIL_SCROLL_WAIT);
+  };
+  const handleAnimationEnd = (event: Event) => {
+    const animationEvent = event as AnimationEvent;
+    if (event.target !== target || animationEvent.animationName !== animationName) return;
+    beginCountdown();
+  };
+
+  if (target) target.addEventListener("animationend", handleAnimationEnd);
+  else beginCountdown();
+
+  return () => {
+    window.clearTimeout(timer);
+    target?.removeEventListener("animationend", handleAnimationEnd);
+  };
+}
 
 function slowScrollTo(element: HTMLElement, target: number, duration = 1800, onFinish?: (completed: boolean) => void) {
   const start = element.scrollTop;
@@ -60,7 +89,7 @@ function slowScrollTo(element: HTMLElement, target: number, duration = 1800, onF
 function SwipeGesture({ mode }: { mode: "up" | "down" | null }) {
   return (
     <div className={`swipe-gesture ${mode ? `is-visible is-${mode}` : ""}`} aria-hidden="true">
-      <span className="swipe-double-arrow"><i>{mode === "down" ? "↓" : "↑"}</i><i>{mode === "down" ? "↓" : "↑"}</i></span>
+      <span className="swipe-single-arrow"><i>{mode === "down" ? "↓" : "↑"}</i></span>
       <img src="swipe-hand.png" alt="" />
     </div>
   );
@@ -392,7 +421,7 @@ function FamiliesDetail() {
     let stopScroll = () => {};
     let returnTimer = 0;
     let hideTimer = 0;
-    const timer = window.setTimeout(() => {
+    const beginAutoScroll = () => {
       if (!scrollRef.current) return;
       setSwipeGuideMode("up");
       stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, (completed) => {
@@ -405,10 +434,15 @@ function FamiliesDetail() {
           hideTimer = window.setTimeout(() => mounted && setSwipeGuideMode(null), 2800);
         }, 3000);
       });
-    }, 1000);
+    };
+    const cancelOpeningWait = waitForDetailOpening(
+      scrollRef.current?.closest(".detail-sheet") ?? null,
+      "sheet-open",
+      beginAutoScroll,
+    );
     return () => {
       mounted = false;
-      window.clearTimeout(timer);
+      cancelOpeningWait();
       window.clearTimeout(returnTimer);
       window.clearTimeout(hideTimer);
       stopScroll();
@@ -468,7 +502,7 @@ function VenueDetail() {
     let stopScroll = () => {};
     let returnTimer = 0;
     let hideTimer = 0;
-    const timer = window.setTimeout(() => {
+    const beginAutoScroll = () => {
       if (!scrollRef.current) return;
       setSwipeGuideMode("up");
       stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, (completed) => {
@@ -481,10 +515,12 @@ function VenueDetail() {
           hideTimer = window.setTimeout(() => mounted && setSwipeGuideMode(null), 2800);
         }, 3000);
       });
-    }, 1000);
+    };
+    const openingLayer = scrollRef.current?.closest(".detail-overlay")?.querySelector(".venue-opening") ?? null;
+    const cancelOpeningWait = waitForDetailOpening(openingLayer, "venue-opening-away", beginAutoScroll);
     return () => {
       mounted = false;
-      window.clearTimeout(timer);
+      cancelOpeningWait();
       window.clearTimeout(returnTimer);
       window.clearTimeout(hideTimer);
       stopScroll();
