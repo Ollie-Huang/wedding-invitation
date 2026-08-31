@@ -20,7 +20,7 @@ const aboutStory = [
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-function slowScrollTo(element: HTMLElement, target: number, duration = 1800) {
+function slowScrollTo(element: HTMLElement, target: number, duration = 1800, onFinish?: () => void) {
   const start = element.scrollTop;
   const distance = target - start;
   const previousSnap = element.style.scrollSnapType;
@@ -37,6 +37,7 @@ function slowScrollTo(element: HTMLElement, target: number, duration = 1800) {
     element.removeEventListener("pointerdown", finish);
     element.removeEventListener("touchstart", finish);
     element.removeEventListener("wheel", finish);
+    onFinish?.();
   };
 
   const startedAt = window.performance.now();
@@ -53,6 +54,15 @@ function slowScrollTo(element: HTMLElement, target: number, duration = 1800) {
   element.addEventListener("wheel", finish, { passive: true });
   animationFrame = window.requestAnimationFrame(step);
   return finish;
+}
+
+function SwipeGesture({ visible }: { visible: boolean }) {
+  return (
+    <div className={`swipe-gesture ${visible ? "is-visible" : ""}`} aria-hidden="true">
+      <span className="swipe-double-arrow"><i>↑</i><i>↑</i></span>
+      <img src="swipe-hand.png" alt="" />
+    </div>
+  );
 }
 
 function remainingTime() {
@@ -373,21 +383,29 @@ function AboutDetail() {
 
 function FamiliesDetail() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [swipeGuideVisible, setSwipeGuideVisible] = useState(false);
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
+    let mounted = true;
     let stopScroll = () => {};
     const timer = window.setTimeout(() => {
-      if (scrollRef.current) stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight);
-    }, 3000);
+      if (!scrollRef.current) return;
+      setSwipeGuideVisible(true);
+      stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, () => {
+        if (mounted) setSwipeGuideVisible(false);
+      });
+    }, 1000);
     return () => {
+      mounted = false;
       window.clearTimeout(timer);
       stopScroll();
     };
   }, []);
 
   return (
-    <div className="families-detail-inner" ref={scrollRef}>
+    <>
+      <div className="families-detail-inner" ref={scrollRef}>
       <figure className="family-detail-photo">
         <img src="families-detail.jpg" alt="冠禎與玟慧手持氣球的婚紗照" />
         <figcaption>THE BEGINNING OF OUR FOREVER</figcaption>
@@ -440,8 +458,10 @@ function FamiliesDetail() {
           <p className="family-combined-venue"><small>VENUE</small><b>台南晶英酒店・大成廳</b></p>
           <p className="family-combined-signature">黃府 · 李府　敬邀</p>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+      <SwipeGesture visible={swipeGuideVisible} />
+    </>
   );
 }
 
@@ -455,21 +475,29 @@ function VenueDetail() {
   const [selectedTransport, setSelectedTransport] = useState<(typeof transportOptions)[number]["id"]>("rail");
   const selected = transportOptions.find((option) => option.id === selectedTransport) ?? transportOptions[0];
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [swipeGuideVisible, setSwipeGuideVisible] = useState(false);
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
+    let mounted = true;
     let stopScroll = () => {};
     const timer = window.setTimeout(() => {
-      if (scrollRef.current) stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight);
-    }, 3000);
+      if (!scrollRef.current) return;
+      setSwipeGuideVisible(true);
+      stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, () => {
+        if (mounted) setSwipeGuideVisible(false);
+      });
+    }, 1000);
     return () => {
+      mounted = false;
       window.clearTimeout(timer);
       stopScroll();
     };
   }, []);
 
   return (
-    <div className="venue-detail-inner" ref={scrollRef}>
+    <>
+      <div className="venue-detail-inner" ref={scrollRef}>
       <section className="venue-map-panel">
         <div className="venue-map-crop"><img src="silks-traffic-guide.png" alt="台南晶英酒店周邊交通地圖" /></div>
         <div className="venue-contact-card">
@@ -523,8 +551,10 @@ function VenueDetail() {
             <p>{selected.text}</p>
           </div>
         </div>
-      </section>
-    </div>
+        </section>
+      </div>
+      <SwipeGesture visible={swipeGuideVisible} />
+    </>
   );
 }
 

@@ -1957,3 +1957,48 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .venue-combined-transport .transport-slide h3 { margin: 5px 0 7px; font-size: 21px; }
   .venue-combined-transport .transport-slide p { margin: 0; font-size: 11px; line-height: 1.55; }
 }
+
+/* v0.8.14 — one-second mobile swipe demonstration synchronized with auto-scroll. */
+.swipe-gesture { display: none; }
+
+@media (max-width: 760px) {
+  .swipe-gesture.is-visible {
+    position: absolute;
+    z-index: 118;
+    right: max(15px, env(safe-area-inset-right));
+    bottom: max(24px, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    width: max-content;
+    pointer-events: none;
+    filter: drop-shadow(0 5px 8px rgba(0,0,0,.32));
+    animation: mobile-swipe-guide 1800ms cubic-bezier(.45,0,.25,1) forwards;
+  }
+  .swipe-gesture img {
+    display: block;
+    width: clamp(72px, 22vw, 96px);
+    height: auto;
+  }
+  .swipe-double-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: -8px;
+    color: #f0c978;
+    font: 700 26px/.55 Arial, sans-serif;
+    text-shadow: 0 1px 3px rgba(0,0,0,.65), 0 0 8px rgba(255,245,214,.48);
+  }
+  .swipe-double-arrow i { font-style: normal; }
+
+  @keyframes mobile-swipe-guide {
+    0% { opacity: 0; transform: translateY(0) scale(.94); }
+    10% { opacity: 1; }
+    78% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-30vh) scale(1); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-gesture.is-visible { display: none; }
+}

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.13 invitation adds optional combined mobile detail pages", async () => {
+test("v0.8.14 invitation demonstrates mobile swipe gestures with synchronized scrolling", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -51,10 +51,13 @@ test("v0.8.13 invitation adds optional combined mobile detail pages", async () =
   assert.match(source, /地點與交通資訊合併預覽/);
   assert.doesNotMatch(source, /className="name-ornament"/);
   assert.match(source, /https:\/\/tainan\.silksplace\.com\/tw\//);
-  assert.match(source, /}, 3000\);/);
+  assert.match(source, /}, 1000\);/);
   assert.match(source, /setTimeout/);
   assert.match(source, /slowScrollTo/);
   assert.match(source, /duration = 1800/);
+  assert.match(source, /SwipeGesture/);
+  assert.match(source, /swipe-hand\.png/);
+  assert.match(source, /swipeGuideVisible/);
   assert.match(source, /Math\.cos\(Math\.PI \* progress\)/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
@@ -107,6 +110,9 @@ test("v0.8.13 invitation adds optional combined mobile detail pages", async () =
   assert.match(styles, /\.venue-combined-page/);
   assert.match(styles, /grid-template-rows: 34% 66%/);
   assert.match(styles, /grid-template-rows: 39% 61%/);
+  assert.match(styles, /\.swipe-gesture\.is-visible/);
+  assert.match(styles, /mobile-swipe-guide 1800ms/);
+  assert.match(styles, /translateY\(-30vh\)/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);
