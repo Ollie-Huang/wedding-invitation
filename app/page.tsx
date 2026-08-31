@@ -20,7 +20,7 @@ const aboutStory = [
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-function slowScrollTo(element: HTMLElement, target: number, duration = 1800, onFinish?: () => void) {
+function slowScrollTo(element: HTMLElement, target: number, duration = 1800, onFinish?: (completed: boolean) => void) {
   const start = element.scrollTop;
   const distance = target - start;
   const previousSnap = element.style.scrollSnapType;
@@ -29,16 +29,17 @@ function slowScrollTo(element: HTMLElement, target: number, duration = 1800, onF
 
   element.style.scrollSnapType = "none";
 
-  const finish = () => {
+  const finish = (completed = false) => {
     if (finished) return;
     finished = true;
     window.cancelAnimationFrame(animationFrame);
     element.style.scrollSnapType = previousSnap;
-    element.removeEventListener("pointerdown", finish);
-    element.removeEventListener("touchstart", finish);
-    element.removeEventListener("wheel", finish);
-    onFinish?.();
+    element.removeEventListener("pointerdown", cancel);
+    element.removeEventListener("touchstart", cancel);
+    element.removeEventListener("wheel", cancel);
+    onFinish?.(completed);
   };
+  const cancel = () => finish(false);
 
   const startedAt = window.performance.now();
   const step = (now: number) => {
@@ -46,20 +47,20 @@ function slowScrollTo(element: HTMLElement, target: number, duration = 1800, onF
     const eased = (1 - Math.cos(Math.PI * progress)) / 2;
     element.scrollTop = start + distance * eased;
     if (progress < 1) animationFrame = window.requestAnimationFrame(step);
-    else finish();
+    else finish(true);
   };
 
-  element.addEventListener("pointerdown", finish, { passive: true });
-  element.addEventListener("touchstart", finish, { passive: true });
-  element.addEventListener("wheel", finish, { passive: true });
+  element.addEventListener("pointerdown", cancel, { passive: true });
+  element.addEventListener("touchstart", cancel, { passive: true });
+  element.addEventListener("wheel", cancel, { passive: true });
   animationFrame = window.requestAnimationFrame(step);
-  return finish;
+  return cancel;
 }
 
-function SwipeGesture({ visible }: { visible: boolean }) {
+function SwipeGesture({ mode }: { mode: "up" | "down" | null }) {
   return (
-    <div className={`swipe-gesture ${visible ? "is-visible" : ""}`} aria-hidden="true">
-      <span className="swipe-double-arrow"><i>↑</i><i>↑</i></span>
+    <div className={`swipe-gesture ${mode ? `is-visible is-${mode}` : ""}`} aria-hidden="true">
+      <span className="swipe-double-arrow"><i>{mode === "down" ? "↓" : "↑"}</i><i>{mode === "down" ? "↓" : "↑"}</i></span>
       <img src="swipe-hand.png" alt="" />
     </div>
   );
@@ -383,22 +384,33 @@ function AboutDetail() {
 
 function FamiliesDetail() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [swipeGuideVisible, setSwipeGuideVisible] = useState(false);
+  const [swipeGuideMode, setSwipeGuideMode] = useState<"up" | "down" | null>(null);
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
     let mounted = true;
     let stopScroll = () => {};
+    let returnTimer = 0;
+    let hideTimer = 0;
     const timer = window.setTimeout(() => {
       if (!scrollRef.current) return;
-      setSwipeGuideVisible(true);
-      stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, () => {
-        if (mounted) setSwipeGuideVisible(false);
+      setSwipeGuideMode("up");
+      stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, (completed) => {
+        if (!mounted) return;
+        setSwipeGuideMode(null);
+        if (!completed) return;
+        returnTimer = window.setTimeout(() => {
+          if (!mounted || !scrollRef.current || scrollRef.current.scrollTop < scrollRef.current.clientHeight * .8) return;
+          setSwipeGuideMode("down");
+          hideTimer = window.setTimeout(() => mounted && setSwipeGuideMode(null), 2800);
+        }, 3000);
       });
     }, 1000);
     return () => {
       mounted = false;
       window.clearTimeout(timer);
+      window.clearTimeout(returnTimer);
+      window.clearTimeout(hideTimer);
       stopScroll();
     };
   }, []);
@@ -432,35 +444,8 @@ function FamiliesDetail() {
         <p className="family-venue"><small>地點 · VENUE</small><b>台南晶英酒店・大成廳</b></p>
         <p className="respectfully-invite">黃府 · 李府　敬邀</p>
       </div>
-      <section className="family-combined-page" aria-label="婚宴資訊合併預覽">
-        <figure className="family-combined-photo">
-          <img src="families-detail.jpg" alt="冠禎與玟慧手持氣球的婚紗照" />
-          <figcaption>OUR WEDDING INVITATION</figcaption>
-        </figure>
-        <div className="family-combined-card">
-          <div className="family-combined-heading">
-            <span aria-hidden="true">囍</span>
-            <div><small>兩姓締盟 · 良緣永結</small><h2>敬邀您蒞臨我們的婚宴</h2></div>
-          </div>
-          <p className="family-combined-copy">誠摯邀請您一同見證兩家相聚、兩心相許的重要時刻。</p>
-          <div className="family-combined-names">
-            <p><small>新郎 · GROOM</small><b>黃冠禎</b></p><i>&amp;</i><p><small>新娘 · BRIDE</small><b>李玟慧</b></p>
-          </div>
-          <dl className="family-combined-hosts">
-            <div><dt>男方主婚人</dt><dd>黃春安、謝秀鳳</dd></div>
-            <div><dt>女方主婚人</dt><dd>李文獎、黃意芬</dd></div>
-          </dl>
-          <div className="family-combined-facts">
-            <p><small>DATE</small><b>2026.12.12</b></p>
-            <p><small>WELCOME</small><b>17:30</b></p>
-            <p><small>BANQUET</small><b>18:00</b></p>
-          </div>
-          <p className="family-combined-venue"><small>VENUE</small><b>台南晶英酒店・大成廳</b></p>
-          <p className="family-combined-signature">黃府 · 李府　敬邀</p>
-        </div>
-        </section>
       </div>
-      <SwipeGesture visible={swipeGuideVisible} />
+      <SwipeGesture mode={swipeGuideMode} />
     </>
   );
 }
@@ -475,22 +460,33 @@ function VenueDetail() {
   const [selectedTransport, setSelectedTransport] = useState<(typeof transportOptions)[number]["id"]>("rail");
   const selected = transportOptions.find((option) => option.id === selectedTransport) ?? transportOptions[0];
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [swipeGuideVisible, setSwipeGuideVisible] = useState(false);
+  const [swipeGuideMode, setSwipeGuideMode] = useState<"up" | "down" | null>(null);
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 760px)").matches) return;
     let mounted = true;
     let stopScroll = () => {};
+    let returnTimer = 0;
+    let hideTimer = 0;
     const timer = window.setTimeout(() => {
       if (!scrollRef.current) return;
-      setSwipeGuideVisible(true);
-      stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, () => {
-        if (mounted) setSwipeGuideVisible(false);
+      setSwipeGuideMode("up");
+      stopScroll = slowScrollTo(scrollRef.current, scrollRef.current.clientHeight, 1800, (completed) => {
+        if (!mounted) return;
+        setSwipeGuideMode(null);
+        if (!completed) return;
+        returnTimer = window.setTimeout(() => {
+          if (!mounted || !scrollRef.current || scrollRef.current.scrollTop < scrollRef.current.clientHeight * .8) return;
+          setSwipeGuideMode("down");
+          hideTimer = window.setTimeout(() => mounted && setSwipeGuideMode(null), 2800);
+        }, 3000);
       });
     }, 1000);
     return () => {
       mounted = false;
       window.clearTimeout(timer);
+      window.clearTimeout(returnTimer);
+      window.clearTimeout(hideTimer);
       stopScroll();
     };
   }, []);
@@ -525,35 +521,8 @@ function VenueDetail() {
           <p>{selected.text}</p>
         </div>
       </section>
-      <section className="venue-combined-page" aria-label="地點與交通資訊合併預覽">
-        <div className="venue-combined-map">
-          <div className="venue-map-crop"><img src="silks-traffic-guide.png" alt="台南晶英酒店周邊交通地圖" /></div>
-          <div className="venue-combined-contact">
-            <p><small>台南晶英酒店</small><b>700 台南市中西區和意路 1 號</b></p>
-            <a href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E5%8D%97%E6%99%B6%E8%8B%B1%E9%85%92%E5%BA%97" target="_blank" rel="noreferrer">開啟地圖 ↗</a>
-          </div>
-        </div>
-        <div className="venue-combined-transport">
-          <p className="transport-kicker">VENUE &amp; ARRIVAL GUIDE</p>
-          <h2>相聚・台南<small>地點與交通資訊整合預覽</small></h2>
-          <div className="transport-tabs" role="tablist" aria-label="合併預覽交通方式">
-            {transportOptions.map((option) => (
-              <button key={`combined-${option.id}`} type="button" role="tab" aria-selected={selectedTransport === option.id} className={selectedTransport === option.id ? "is-active" : ""} onClick={() => setSelectedTransport(option.id)}>
-                <i className={`transport-icon transport-icon-${option.id}`} aria-hidden="true">
-                  {option.id === "parking" ? <b className="parking-symbol">P</b> : <img src={option.id === "drive" ? "transport-drive-clean.png" : `transport-${option.id}.png`} alt="" />}
-                </i><span>{option.label}</span>
-              </button>
-            ))}
-          </div>
-          <div className="transport-slide" key={`combined-${selected.id}`} role="tabpanel">
-            <small>{selected.label.toUpperCase()} INFORMATION</small>
-            <h3>{selected.title}</h3>
-            <p>{selected.text}</p>
-          </div>
-        </div>
-        </section>
       </div>
-      <SwipeGesture visible={swipeGuideVisible} />
+      <SwipeGesture mode={swipeGuideMode} />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.14 invitation demonstrates mobile swipe gestures with synchronized scrolling", async () => {
+test("v0.8.15 invitation removes combined pages and repeats a non-scrolling return gesture", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -45,10 +45,10 @@ test("v0.8.14 invitation demonstrates mobile swipe gestures with synchronized sc
   assert.match(source, /transport-drive-clean\.png/);
   assert.doesNotMatch(source, /transport-parking-clean\.png/);
   assert.match(source, /className="parking-symbol">P/);
-  assert.match(source, /family-combined-page/);
-  assert.match(source, /venue-combined-page/);
-  assert.match(source, /婚宴資訊合併預覽/);
-  assert.match(source, /地點與交通資訊合併預覽/);
+  assert.doesNotMatch(source, /family-combined-page/);
+  assert.doesNotMatch(source, /venue-combined-page/);
+  assert.doesNotMatch(source, /婚宴資訊合併預覽/);
+  assert.doesNotMatch(source, /地點與交通資訊合併預覽/);
   assert.doesNotMatch(source, /className="name-ornament"/);
   assert.match(source, /https:\/\/tainan\.silksplace\.com\/tw\//);
   assert.match(source, /}, 1000\);/);
@@ -57,7 +57,10 @@ test("v0.8.14 invitation demonstrates mobile swipe gestures with synchronized sc
   assert.match(source, /duration = 1800/);
   assert.match(source, /SwipeGesture/);
   assert.match(source, /swipe-hand\.png/);
-  assert.match(source, /swipeGuideVisible/);
+  assert.match(source, /swipeGuideMode/);
+  assert.match(source, /setSwipeGuideMode\("down"\)/);
+  assert.match(source, /}, 3000\);/);
+  assert.match(source, /scrollTop < scrollRef\.current\.clientHeight \* \.8/);
   assert.match(source, /Math\.cos\(Math\.PI \* progress\)/);
   assert.doesNotMatch(source, /<p className="venue-time">/);
   assert.doesNotMatch(source, />第一章</);
@@ -106,13 +109,12 @@ test("v0.8.14 invitation demonstrates mobile swipe gestures with synchronized sc
   assert.match(styles, /\.transport-icon-rail::after/);
   assert.match(styles, /border-color: #f6a064/);
   assert.match(styles, /border-color: #995daf/);
-  assert.match(styles, /\.family-combined-page/);
-  assert.match(styles, /\.venue-combined-page/);
-  assert.match(styles, /grid-template-rows: 34% 66%/);
-  assert.match(styles, /grid-template-rows: 39% 61%/);
   assert.match(styles, /\.swipe-gesture\.is-visible/);
-  assert.match(styles, /mobile-swipe-guide 1800ms/);
+  assert.match(styles, /mobile-swipe-guide-up 1800ms/);
+  assert.match(styles, /mobile-swipe-guide-down 1400ms/);
+  assert.match(styles, /cubic-bezier\(\.45,0,\.25,1\) 2/);
   assert.match(styles, /translateY\(-30vh\)/);
+  assert.match(styles, /translateY\(-28vh\)/);
   assert.match(styles, /hotel-website/);
   assert.match(styles, /venue-trigger-shine/);
   assert.match(styles, /text-size-adjust: 100%/);
