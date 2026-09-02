@@ -20,6 +20,7 @@ const aboutStory = [
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const MOBILE_DETAIL_SCROLL_WAIT = 1000;
+const MUSIC_VOLUME = 0.24;
 
 function waitForDetailOpening(
   target: Element | null,
@@ -92,6 +93,95 @@ function SwipeGesture({ mode }: { mode: "up" | "down" | null }) {
       <span className="swipe-single-arrow"><i>{mode === "down" ? "↓" : "↑"}</i></span>
       <img src="swipe-hand.png" alt="" />
     </div>
+  );
+}
+
+function MusicPlayer({ detailOpen }: { detailOpen: boolean }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const fadeFrame = useRef(0);
+  const musicEnabled = useRef(true);
+  const removeStartListenersRef = useRef<() => void>(() => {});
+  const [playing, setPlaying] = useState(false);
+
+  const stopFade = () => window.cancelAnimationFrame(fadeFrame.current);
+  const fadeVolume = (target: number, pauseWhenSilent = false) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    stopFade();
+    const start = audio.volume;
+    const startedAt = window.performance.now();
+    const duration = 1400;
+    const step = (now: number) => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      audio.volume = clamp(start + (target - start) * progress, 0, 1);
+      if (progress < 1) fadeFrame.current = window.requestAnimationFrame(step);
+      else if (pauseWhenSilent) audio.pause();
+    };
+    fadeFrame.current = window.requestAnimationFrame(step);
+  };
+  const startMusic = () => {
+    const audio = audioRef.current;
+    if (!audio || !musicEnabled.current) return;
+    audio.volume = 0;
+    void audio.play().then(() => {
+      setPlaying(true);
+      fadeVolume(MUSIC_VOLUME);
+    }).catch(() => setPlaying(false));
+  };
+
+  useEffect(() => {
+    musicEnabled.current = window.localStorage.getItem("wedding-music") !== "off";
+    const removeStartListeners = () => {
+      window.removeEventListener("pointerdown", beginOnFirstGesture);
+      window.removeEventListener("keydown", beginOnFirstGesture);
+    };
+    removeStartListenersRef.current = removeStartListeners;
+    const beginOnFirstGesture = (event: Event) => {
+      if (!musicEnabled.current || (event.target instanceof Element && event.target.closest(".music-toggle"))) return;
+      removeStartListeners();
+      startMusic();
+    };
+    window.addEventListener("pointerdown", beginOnFirstGesture);
+    window.addEventListener("keydown", beginOnFirstGesture);
+    return () => {
+      removeStartListeners();
+      stopFade();
+    };
+  }, []);
+
+  const toggleMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    removeStartListenersRef.current();
+    if (playing) {
+      musicEnabled.current = false;
+      window.localStorage.setItem("wedding-music", "off");
+      setPlaying(false);
+      fadeVolume(0, true);
+      return;
+    }
+    musicEnabled.current = true;
+    window.localStorage.setItem("wedding-music", "on");
+    startMusic();
+  };
+
+  return (
+    <>
+      <audio ref={audioRef} loop preload="metadata">
+        <source src="wedding-background.mp3" type="audio/mpeg" />
+      </audio>
+      <button
+        className={`music-toggle ${playing ? "is-playing" : ""} ${detailOpen ? "is-detail-open" : ""}`}
+        type="button"
+        onClick={toggleMusic}
+        aria-label={playing ? "暫停背景音樂" : "播放背景音樂"}
+        aria-pressed={playing}
+        title={playing ? "暫停背景音樂" : "播放背景音樂"}
+      >
+        <span className="music-symbol" aria-hidden="true">♫</span>
+        <span className="music-bars" aria-hidden="true"><i /><i /><i /></span>
+      </button>
+    </>
   );
 }
 
@@ -208,6 +298,8 @@ export default function Home() {
           <b>{String(countdown.seconds).padStart(2, "0")}</b><small>SEC</small>
         </div>
       </aside>
+
+      <MusicPlayer detailOpen={open !== null} />
 
       <nav className="page-dots" aria-label="喜帖章節導覽">
         {chapters.map((chapter, index) => (

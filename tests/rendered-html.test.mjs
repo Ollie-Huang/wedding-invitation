@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.8.16 invitation waits for the full opening and uses one hand-drawn arrow", async () => {
+test("v0.8.17 invitation adds gently controlled background music", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -63,6 +63,14 @@ test("v0.8.16 invitation waits for the full opening and uses one hand-drawn arro
   assert.doesNotMatch(source, /swipe-double-arrow/);
   assert.match(source, /swipe-hand\.png/);
   assert.match(source, /swipeGuideMode/);
+  assert.match(source, /function MusicPlayer/);
+  assert.match(source, /wedding-background\.mp3/);
+  assert.match(source, /MUSIC_VOLUME = 0\.24/);
+  assert.match(source, /wedding-music/);
+  assert.match(source, /beginOnFirstGesture/);
+  assert.match(source, /removeStartListenersRef/);
+  assert.match(source, /loop preload="metadata"/);
+  assert.match(source, /MusicPlayer detailOpen=\{open !== null\}/);
   assert.match(source, /setSwipeGuideMode\("down"\)/);
   assert.match(source, /}, 3000\);/);
   assert.match(source, /scrollTop < scrollRef\.current\.clientHeight \* \.8/);
@@ -117,6 +125,10 @@ test("v0.8.16 invitation waits for the full opening and uses one hand-drawn arro
   assert.match(styles, /\.swipe-gesture\.is-visible/);
   assert.match(styles, /\.swipe-single-arrow/);
   assert.match(styles, /-webkit-text-stroke: 2px #050505/);
+  assert.match(styles, /\.music-toggle/);
+  assert.match(styles, /\.music-toggle\.is-playing/);
+  assert.match(styles, /music-bar-dance/);
+  assert.match(styles, /\.music-toggle\.is-detail-open/);
   assert.match(styles, /mobile-swipe-guide-up 1800ms/);
   assert.match(styles, /mobile-swipe-guide-down 1400ms/);
   assert.match(styles, /cubic-bezier\(\.45,0,\.25,1\) 2/);

@@ -1888,3 +1888,60 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .swipe-gesture.is-visible { display: none; }
 }
+
+/* v0.8.17 — quiet, persistent background-music control. */
+.music-toggle {
+  position: fixed;
+  z-index: 150;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: auto auto;
+  place-items: center;
+  gap: 5px;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(231,199,143,.8);
+  border-radius: 50%;
+  color: #f7ead2;
+  background: rgba(16,42,35,.78);
+  box-shadow: 0 8px 24px rgba(3,15,12,.24), inset 0 0 0 4px rgba(255,255,255,.035);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: left .35s ease, right .35s ease, border-color .3s ease, background .3s ease, transform .3s ease;
+}
+.music-toggle:hover,
+.music-toggle:focus-visible { border-color: #f3d79d; background: rgba(118,73,48,.9); transform: translateY(-2px); outline: none; }
+.music-symbol { margin-left: 3px; font: 400 20px/1 Georgia, serif; }
+.music-bars { display: flex; align-items: center; gap: 2px; height: 15px; margin-right: 3px; }
+.music-bars i { width: 2px; height: 5px; border-radius: 2px; background: currentColor; opacity: .55; transform-origin: center; }
+.music-bars i:nth-child(2) { height: 10px; }
+.music-bars i:nth-child(3) { height: 7px; }
+.music-toggle.is-playing .music-bars i { opacity: 1; animation: music-bar-dance .85s ease-in-out infinite alternate; }
+.music-toggle.is-playing .music-bars i:nth-child(2) { animation-delay: -.32s; }
+.music-toggle.is-playing .music-bars i:nth-child(3) { animation-delay: -.58s; }
+@keyframes music-bar-dance {
+  from { transform: scaleY(.45); }
+  to { transform: scaleY(1.35); }
+}
+
+@media (max-width: 760px) {
+  .music-toggle {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: 44px;
+    height: 44px;
+  }
+  .music-toggle.is-detail-open {
+    right: auto;
+    left: max(16px, env(safe-area-inset-left));
+  }
+  .music-symbol { font-size: 18px; }
+  .music-bars { gap: 1.5px; transform: scale(.9); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-toggle.is-playing .music-bars i { animation: none; }
+}
