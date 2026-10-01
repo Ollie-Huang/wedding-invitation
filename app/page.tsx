@@ -21,7 +21,7 @@ const aboutStory = [
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const MOBILE_DETAIL_SCROLL_WAIT = 1000;
 const MUSIC_VOLUME = 0.24;
-const ENVELOPE_OPEN_DURATION = 5400;
+const ENVELOPE_OPEN_DURATION = 7850;
 
 function EnvelopeCover({ onFinished }: { onFinished: () => void }) {
   const [opening, setOpening] = useState(false);
@@ -64,7 +64,7 @@ function EnvelopeCover({ onFinished }: { onFinished: () => void }) {
           <div className="envelope-flap envelope-flap-top" />
           <div className="envelope-pattern-light" />
           <div className="envelope-seal">
-            <img src="wedding-wax-seal.png" alt="" />
+            <img src="wedding-wax-seal-v2.png" alt="" />
           </div>
         </div>
         <div className="envelope-intro-copy">

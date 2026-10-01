@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.9.1 invitation matches the expanding-gold and white-flash envelope sequence", async () => {
+test("v0.9.2 invitation keeps the revised seal and slower gold-spread sequence", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -72,9 +72,9 @@ test("v0.9.1 invitation matches the expanding-gold and white-flash envelope sequ
   assert.match(source, /loop preload="metadata"/);
   assert.match(source, /MusicPlayer detailOpen=\{open !== null\}/);
   assert.match(source, /function EnvelopeCover/);
-  assert.match(source, /ENVELOPE_OPEN_DURATION = 5400/);
+  assert.match(source, /ENVELOPE_OPEN_DURATION = 7850/);
   assert.match(source, /envelopeVisible/);
-  assert.match(source, /wedding-wax-seal\.png/);
+  assert.match(source, /wedding-wax-seal-v2\.png/);
   assert.doesNotMatch(source, /<span>Wedding<\/span>/);
   assert.match(source, /envelope-white-flash/);
   assert.match(source, /輕觸任一處・展開喜帖/);

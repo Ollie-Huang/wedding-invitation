@@ -2132,19 +2132,19 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .envelope-intro-copy span::after { transform: scaleX(-1); }
 
 .envelope-cover.is-opening { cursor: default; }
-.envelope-cover.is-opening .envelope-flap::after { animation: envelope-gold-spread 2.45s cubic-bezier(.18,.68,.22,1) forwards; }
-.envelope-cover.is-opening .envelope-pattern-light { animation: envelope-pattern-bloom 2.45s cubic-bezier(.18,.68,.22,1) forwards; }
-.envelope-cover.is-opening .envelope-seal { animation: envelope-seal-release 3.25s ease-in-out forwards; }
-.envelope-cover.is-opening .envelope-inner-glow { animation: envelope-inner-appear 1.25s 2.35s ease-out forwards; }
-.envelope-cover.is-opening .envelope-flap-top { animation: envelope-lid-open 1.2s 2.45s cubic-bezier(.45,.02,.18,1) forwards; }
-.envelope-cover.is-opening .envelope-flap-left { animation: envelope-left-open 1.05s 3.05s cubic-bezier(.45,.02,.18,1) forwards; }
-.envelope-cover.is-opening .envelope-flap-right { animation: envelope-right-open 1.05s 3.05s cubic-bezier(.45,.02,.18,1) forwards; }
-.envelope-cover.is-opening .envelope-flap-bottom { animation: envelope-bottom-open 1.05s 3.08s cubic-bezier(.45,.02,.18,1) forwards; }
-.envelope-cover.is-opening .envelope-card { animation: envelope-card-away 1.15s 4.05s cubic-bezier(.5,0,.7,1) forwards; }
-.envelope-cover.is-opening .envelope-white-flash { animation: envelope-white-burst 2.05s 3.25s cubic-bezier(.2,.62,.2,1) forwards; }
+.envelope-cover.is-opening .envelope-flap::after { animation: envelope-gold-spread 4.9s cubic-bezier(.18,.68,.22,1) forwards; }
+.envelope-cover.is-opening .envelope-pattern-light { animation: envelope-pattern-bloom 4.9s cubic-bezier(.18,.68,.22,1) forwards; }
+.envelope-cover.is-opening .envelope-seal { animation: envelope-seal-release 3.25s 2.45s ease-in-out forwards; }
+.envelope-cover.is-opening .envelope-inner-glow { animation: envelope-inner-appear 1.25s 4.8s ease-out forwards; }
+.envelope-cover.is-opening .envelope-flap-top { animation: envelope-lid-open 1.2s 4.9s cubic-bezier(.45,.02,.18,1) forwards; }
+.envelope-cover.is-opening .envelope-flap-left { animation: envelope-left-open 1.05s 5.5s cubic-bezier(.45,.02,.18,1) forwards; }
+.envelope-cover.is-opening .envelope-flap-right { animation: envelope-right-open 1.05s 5.5s cubic-bezier(.45,.02,.18,1) forwards; }
+.envelope-cover.is-opening .envelope-flap-bottom { animation: envelope-bottom-open 1.05s 5.53s cubic-bezier(.45,.02,.18,1) forwards; }
+.envelope-cover.is-opening .envelope-card { animation: envelope-card-away 1.15s 6.5s cubic-bezier(.5,0,.7,1) forwards; }
+.envelope-cover.is-opening .envelope-white-flash { animation: envelope-white-burst 2.05s 5.7s cubic-bezier(.2,.62,.2,1) forwards; }
 .envelope-cover.is-opening .envelope-intro-copy { animation: envelope-copy-away .45s ease forwards; }
-.envelope-cover.is-opening .envelope-halo { animation: envelope-room-flash 5.25s ease forwards; }
-.envelope-cover.is-opening { animation: envelope-cover-away 1s 4.35s ease forwards; }
+.envelope-cover.is-opening .envelope-halo { animation: envelope-room-flash 5.25s 2.45s ease forwards; }
+.envelope-cover.is-opening { animation: envelope-cover-away 1s 6.8s ease forwards; }
 
 @keyframes envelope-tap-breathe { 0%,100% { opacity: .55; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
 @keyframes envelope-gold-spread {
