@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-test("v0.9.0 invitation adds a gold-sealed red-envelope opening prelude", async () => {
+test("v0.9.1 invitation matches the expanding-gold and white-flash envelope sequence", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -72,10 +72,11 @@ test("v0.9.0 invitation adds a gold-sealed red-envelope opening prelude", async 
   assert.match(source, /loop preload="metadata"/);
   assert.match(source, /MusicPlayer detailOpen=\{open !== null\}/);
   assert.match(source, /function EnvelopeCover/);
-  assert.match(source, /ENVELOPE_OPEN_DURATION = 5200/);
+  assert.match(source, /ENVELOPE_OPEN_DURATION = 5400/);
   assert.match(source, /envelopeVisible/);
   assert.match(source, /wedding-wax-seal\.png/);
-  assert.match(source, /<span>Wedding<\/span>/);
+  assert.doesNotMatch(source, /<span>Wedding<\/span>/);
+  assert.match(source, /envelope-white-flash/);
   assert.match(source, /輕觸任一處・展開喜帖/);
   assert.match(source, /aria-label="輕觸開啟冠禎與玟慧的婚禮喜帖"/);
   assert.match(source, /setSwipeGuideMode\("down"\)/);
@@ -138,10 +139,16 @@ test("v0.9.0 invitation adds a gold-sealed red-envelope opening prelude", async 
   assert.match(styles, /\.music-toggle\.is-detail-open/);
   assert.match(styles, /\.envelope-cover/);
   assert.match(styles, /envelope-embossed\.png/);
+  assert.match(styles, /envelope-embossed-gold\.png/);
+  assert.match(styles, /envelope-embossed-landscape\.png/);
+  assert.match(styles, /envelope-embossed-landscape-gold\.png/);
   assert.match(styles, /envelope-pattern-bloom/);
+  assert.match(styles, /envelope-gold-spread/);
+  assert.match(styles, /envelope-white-burst/);
   assert.match(styles, /envelope-seal-release/);
   assert.match(styles, /envelope-lid-open/);
   assert.match(styles, /envelope-cover-away/);
+  assert.doesNotMatch(styles, /\.envelope-card::before/);
   assert.match(styles, /mobile-swipe-guide-up 1800ms/);
   assert.match(styles, /mobile-swipe-guide-down 1400ms/);
   assert.match(styles, /cubic-bezier\(\.45,0,\.25,1\) 2/);

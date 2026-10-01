@@ -21,7 +21,7 @@ const aboutStory = [
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const MOBILE_DETAIL_SCROLL_WAIT = 1000;
 const MUSIC_VOLUME = 0.24;
-const ENVELOPE_OPEN_DURATION = 5200;
+const ENVELOPE_OPEN_DURATION = 5400;
 
 function EnvelopeCover({ onFinished }: { onFinished: () => void }) {
   const [opening, setOpening] = useState(false);
@@ -65,7 +65,6 @@ function EnvelopeCover({ onFinished }: { onFinished: () => void }) {
           <div className="envelope-pattern-light" />
           <div className="envelope-seal">
             <img src="wedding-wax-seal.png" alt="" />
-            <span>Wedding</span>
           </div>
         </div>
         <div className="envelope-intro-copy">
@@ -74,6 +73,7 @@ function EnvelopeCover({ onFinished }: { onFinished: () => void }) {
           <span>輕觸任一處・展開喜帖</span>
         </div>
       </div>
+      <div className="envelope-white-flash" aria-hidden="true" />
     </section>
   );
 }
