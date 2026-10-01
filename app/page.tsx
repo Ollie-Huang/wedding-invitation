@@ -21,6 +21,62 @@ const aboutStory = [
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const MOBILE_DETAIL_SCROLL_WAIT = 1000;
 const MUSIC_VOLUME = 0.24;
+const ENVELOPE_OPEN_DURATION = 5200;
+
+function EnvelopeCover({ onFinished }: { onFinished: () => void }) {
+  const [opening, setOpening] = useState(false);
+  const finishTimer = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (finishTimer.current !== null) window.clearTimeout(finishTimer.current);
+  }, []);
+
+  const openEnvelope = () => {
+    if (opening) return;
+    setOpening(true);
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    finishTimer.current = window.setTimeout(onFinished, reduceMotion ? 500 : ENVELOPE_OPEN_DURATION);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    openEnvelope();
+  };
+
+  return (
+    <section
+      className={`envelope-cover ${opening ? "is-opening" : ""}`}
+      role="button"
+      tabIndex={opening ? -1 : 0}
+      aria-label="輕觸開啟冠禎與玟慧的婚禮喜帖"
+      aria-busy={opening}
+      onClick={openEnvelope}
+      onKeyDown={handleKeyDown}
+    >
+      <div className="envelope-halo" aria-hidden="true" />
+      <div className="envelope-scene" aria-hidden="true">
+        <div className="envelope-card">
+          <div className="envelope-inner-glow"><i /><i /><i /></div>
+          <div className="envelope-flap envelope-flap-left" />
+          <div className="envelope-flap envelope-flap-right" />
+          <div className="envelope-flap envelope-flap-bottom" />
+          <div className="envelope-flap envelope-flap-top" />
+          <div className="envelope-pattern-light" />
+          <div className="envelope-seal">
+            <img src="wedding-wax-seal.png" alt="" />
+            <span>Wedding</span>
+          </div>
+        </div>
+        <div className="envelope-intro-copy">
+          <small>YOU ARE CORDIALLY INVITED</small>
+          <p>冠禎 <i>&amp;</i> 玟慧</p>
+          <span>輕觸任一處・展開喜帖</span>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function waitForDetailOpening(
   target: Element | null,
@@ -198,6 +254,7 @@ function remainingTime() {
 export default function Home() {
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
+  const [envelopeVisible, setEnvelopeVisible] = useState(true);
   const [landscapeTipOpen, setLandscapeTipOpen] = useState(false);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [visibleViewport, setVisibleViewport] = useState({ left: 0, top: 0, width: 0, height: 0 });
@@ -282,6 +339,7 @@ export default function Home() {
 
   return (
     <main className={`vertical-invitation active-page-${active + 1}`}>
+      {envelopeVisible && <EnvelopeCover onFinished={() => setEnvelopeVisible(false)} />}
       <header className="vertical-masthead" aria-label="新人姓名">
         <div className="name-lockup">
           <p>冠禎 <i>&amp;</i> 玟慧</p>
